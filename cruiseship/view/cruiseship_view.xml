@@ -114,6 +114,13 @@
                             <page string="Observations">
                                 <field name="observations" />
                             </page>
+                            <page string="Prices">
+                                <group>
+                                    <field name="adult_price_normal" widget="monetary" />
+                                    <field name="young_price_normal" widget="monetary"/>
+                                    <field name="child_price_normal" widget="monetary"/>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
                 </form>

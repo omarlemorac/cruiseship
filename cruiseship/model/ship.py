@@ -20,6 +20,7 @@
 ##############################################################################
 
 from osv import osv, fields
+import openerp.addons.decimal_precision as dp
 
 
 class cruise_ship(osv.Model):
@@ -137,5 +138,15 @@ class departure(osv.Model):
             , type='integer'
             , string='Maximum Capacity'
             , help='Maximum capacity of ship'),
+        'adult_price_normal':fields.float('Adult price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'young_price_normal':fields.float('Young price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'child_price_normal':fields.float('Child price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+
 
             }

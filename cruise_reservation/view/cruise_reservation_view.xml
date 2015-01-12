@@ -37,7 +37,7 @@
                                 <field name="rq_no"/>
                             </h1>
                             <label for="departure_id" class="oe_edit_only" />
-                            <h2><field name="departure_id" /></h2>
+                            <h2><field name="departure_id" on_change="onchange_departure(departure_id)" /></h2>
                             <label for="order_contact_id" class="oe_edit_only" />
                             <h3><field name="order_contact_id" /></h3>
                         </div>
@@ -45,9 +45,6 @@
                             <group>
                                 <field name="availability"  />
                                 <field name="max_capacity"  />
-                                <field name="adults"  />
-                                <field name="children"  />
-                                <field name="young"  />
                             </group>
                             <group>
                                 <field name="availability_perc" widget="progressbar" />
@@ -56,6 +53,28 @@
                                 <field name="date_limit"  />
                             </group>
                         </group>
+                        <notebook>
+                            <page string="Prices">
+                                <group>
+                                    <group>
+                                        <field name="adults"  />
+                                        <field name="children"  />
+                                        <field name="young"  />
+                                    </group>
+                                    <group>
+                                        <field name="adult_price_unit"  />
+                                        <field name="child_price_unit"  />
+                                        <field name="young_price_unit"  />
+                                    </group>
+                                    <group>
+                                        <field name="adult_price_total"  />
+                                        <field name="children_price_total"  />
+                                        <field name="young_price_total"  />
+                                        <field name="amount_total"  />
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
 			</field>

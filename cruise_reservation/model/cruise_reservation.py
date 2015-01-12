@@ -19,6 +19,7 @@
 #
 ##############################################################################
 from osv import osv, fields
+import openerp.addons.decimal_precision as dp
 
 
 class departure(osv.Model):
@@ -37,12 +38,11 @@ class departure(osv.Model):
             dep_total_spaces = 0
             val = {}
             for req in dep.requisition_ids:
-                dep_total_spaces = req.total_spaces
+                dep_total_spaces += req.total_spaces
             val['availability_perc'] = ((float(dep.max_capacity) - float(dep_total_spaces)) / \
                     float(dep.max_capacity)) * 100
             val['availability'] = dep.max_capacity - dep_total_spaces
             res[dep.id] = val
-
         return res
 
 
@@ -85,9 +85,6 @@ Reservation of cabins in cruise
 
     _columns = {
             'name':fields.char('Name', 255, help='fields help'),
-
-
-
             }
 
 
@@ -121,46 +118,87 @@ class requisition(osv.Model):
 
         for req in req_obj:
             res[req.id] = req['adults'] + req['young'] + req['children']
+        return res
 
+    def _total_price(self, cr, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        req_obj = self.browse(cr, uid, ids)
+
+        for req in req_obj:
+            fields = {}
+            fields['adult_price_total'] = req['adults'] * req['adult_price_unit']
+            fields['children_price_total'] = req['children'] * req['child_price_unit']
+            fields['young_price_total'] = req['young'] * req['young_price_unit']
+            fields['amount_total'] = fields['adult_price_total'] +\
+                fields['children_price_total'] +\
+                fields['young_price_total']
+            res[req.id] = fields
         return res
 
 
 
     _columns = {
-            'rq_no': fields.char('Reservation No', size=64, required=True, select=True),
-            'order_contact_id':fields.many2one('res.partner'
-                , string='Ordering contact', help='Ordering contact'),
-            'lead_id':fields.many2one('crm.lead', 'Lead'
-               , help='Choose the lead for this requisition.'),
-            'departure_id':fields.many2one('cruise.departure', 'Departure'
-                , help='Departure', required=True),
-            'max_capacity':fields.related('departure_id', 'max_capacity'
-                ,readonly=True, string='Maximum capacity', help='Maximum capacity'),
-            'availability':fields.related('departure_id', 'availability'
-                ,readonly=True, string='Availability', type="integer"
-                , help='Availability on departure'),
-            'availability_perc':fields.related('departure_id', 'availability_perc'
-                ,readonly=True, string='Availability percentage in departure'
-                , help='Availability on departure'),
-            'adults':fields.integer('Adult', help='Number of adults'
-                ,required=True),
-            'children':fields.integer('Children',required=True, help='Number of children'),
-            'young':fields.integer('Young',required=True, help='Number of young'),
-            'state': fields.selection([
-                   ('draft','Draft')
-                  ,('confirm','Confirm')
-                  ,('cancel','Cancle')
-                  ,('done','Done')
-                  ]
-                , 'State',readonly=True),
-            'date_order':fields.date('Date order',required=True, help='Date order'),
-            'date_limit':fields.date('Date limit',required=True, help='Date limit'),
-            'total_spaces':fields.function(_total_spaces, method=True, store=False
-                , fnct_inv=None, fnct_search= None, string='Total spaces'
-                , help='Total spaces reserved'
-                ),
+        'rq_no': fields.char('Reservation No', size=64, required=True, select=True),
+        'order_contact_id':fields.many2one('res.partner'
+            , string='Ordering contact', help='Ordering contact'),
+        'lead_id':fields.many2one('crm.lead', 'Lead'
+           , help='Choose the lead for this requisition.'),
+        'departure_id':fields.many2one('cruise.departure', 'Departure'
+            , help='Departure', required=True),
+        'max_capacity':fields.related('departure_id', 'max_capacity'
+            ,readonly=True, string='Maximum capacity', help='Maximum capacity'),
+        'availability':fields.related('departure_id', 'availability'
+            ,readonly=True, string='Availability', type="integer"
+            , help='Availability on departure'),
+        'availability_perc':fields.related('departure_id', 'availability_perc'
+            ,readonly=True, string='Availability percentage in departure'
+            , help='Availability on departure'),
+        'adults':fields.integer('Adult', help='Number of adults'
+            ,required=True),
+        'children':fields.integer('Children',required=True, help='Number of children'),
+        'young':fields.integer('Young',required=True, help='Number of young'),
+        'state': fields.selection([
+               ('draft','Draft')
+              ,('confirm','Confirm')
+              ,('cancel','Cancel')
+              ,('done','Done')
+              ]
+            , 'State',readonly=True),
+        'adult_price_unit':fields.float('Adult price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'young_price_unit':fields.float('Young price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'child_price_unit':fields.float('Child price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'date_order':fields.date('Date order',required=True, help='Date order'),
+        'date_limit':fields.date('Date limit',required=True, help='Date limit'),
+        'total_spaces':fields.function(_total_spaces, method=True, store=False
+            , fnct_inv=None, fnct_search= None, string='Total spaces'
+            , help='Total spaces reserved'
+            ),
 
-            }
+        'adult_price_total':fields.function(_total_price, method=True, store=False
+            , fnct_inv=None, fnct_search= None, string='Total adult', type="float"
+            , help='Total price adult', multi='calc_totals'
+            ),
+        'children_price_total':fields.function(_total_price, method=True, store=False
+            , fnct_inv=None, fnct_search= None, string='Total children', type="float"
+            , help='Total price children', multi='calc_totals'
+            ),
+        'young_price_total':fields.function(_total_price, method=True, store=False
+            , fnct_inv=None, fnct_search= None, string='Total young', type="float"
+            , help='Total price children', multi='calc_totals'
+            ),
+        'amount_total':fields.function(_total_price, method=True, store=False
+            , fnct_inv=None, fnct_search= None, string='Amount total', type="float"
+            , help='Amount total', multi='calc_totals'
+            ),
+        }
 
     _defaults = {
         'adults':0,
@@ -173,6 +211,18 @@ class requisition(osv.Model):
         'date_limit': fields.date.context_today,
             }
 
+    def onchange_departure(self, cr, uid, ids, departure_id, context=None):
+        if context is None:
+            context = {}
+
+        res = {}
+        if departure_id:
+            departure_obj = self.pool.get('cruise.departure').browse(cr, uid,
+                    departure_id)
+            res['adult_price_unit'] = departure_obj.adult_price_normal
+            res['child_price_unit'] = departure_obj.child_price_normal
+            res['young_price_unit'] = departure_obj.young_price_normal
+        return {'value':res}
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
