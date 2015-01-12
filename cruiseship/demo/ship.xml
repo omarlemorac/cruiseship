@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--====================================================
+						Cruise
+		==================================================== -->
+        <record model="cruise.ship" id="cruise_ship_samba_demo">
+            <field name="name" >Samba</field>
+            <field name="sequence" >1</field>
+            <field name="max_pax" >16</field>
+            <field name="check_max_capacity" >1</field>
+        </record>
+        <record model="cruise.ship" id="cruise_ship_beagle_demo">
+            <field name="name" >Beagle</field>
+            <field name="sequence" >2</field>
+            <field name="max_pax" >17</field>
+            <field name="check_max_capacity" >1</field>
+        </record>				
+        <!--====================================================
+						Cabin type
+		==================================================== -->
+        <record model="cruise.cabin.type" id="cruise_ship_ct_dbb_demo">
+            <field name="name" >Double bunk bed</field>
+        </record>
+        <record model="cruise.cabin.type" id="cruise_ship_ct_mat_demo">
+            <field name="name" >Matrimonial</field>
+        </record>
+        <!--====================================================
+						Cabin
+		==================================================== -->
+        <record model="cruise.cabin" id="cruise_ship_cabin_s1_demo">
+            <field name="name" >Cabin 1</field>
+            <field name="max_adult" >2</field>
+            <field name="max_child" >2</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+        </record>
+        <record model="cruise.cabin" id="cruise_ship_cabin_s2_demo">
+            <field name="name" >Cabin 2</field>
+            <field name="max_adult" >2</field>
+            <field name="max_child" >2</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+        </record>
+        <record model="cruise.cabin" id="cruise_ship_cabin_s3_demo">
+            <field name="name" >Cabin 3</field>
+            <field name="max_adult" >2</field>
+            <field name="max_child" >2</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+        </record>
+        <record model="cruise.cabin" id="cruise_ship_cabin_s4_demo">
+            <field name="name" >Cabin 4</field>
+            <field name="max_adult" >2</field>
+            <field name="max_child" >2</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+        </record>
+        <record model="cruise.cabin" id="cruise_ship_cabin_s5_demo">
+            <field name="name" >Cabin 5</field>
+            <field name="max_adult" >2</field>
+            <field name="max_child" >2</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+        </record>
+        <record model="cruise.cabin" id="cruise_ship_cabin_s6_demo">
+            <field name="name" >Cabin 6</field>
+            <field name="max_adult" >2</field>
+            <field name="max_child" >2</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+        </record>
+        <record model="cruise.cabin" id="cruise_ship_cabin_s7_demo">
+            <field name="name" >Cabin 7</field>
+            <field name="max_adult" >2</field>
+            <field name="max_child" >2</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_mat_demo" />
+        </record>
+        <!--====================================================
+						Departures
+        ==================================================== -->
+        <record model="cruise.departure" id="cruise_departure_d1_demo">
+            <field name="name" >Beagle/2015-01-10</field>
+            <field name="departure_date" >2015-01-13</field>
+            <field name="arrival_date" >2015-01-20</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="itinerary">SE</field>
+        </record>
+        <record model="cruise.departure" id="cruise_departure_d2_demo">
+            <field name="name" >Beagle/2015-01-10</field>
+            <field name="departure_date" >2015-01-20</field>
+            <field name="arrival_date" >2015-01-27</field>
+            <field name="ship_id" ref="cruise_ship_samba_demo" />
+            <field name="itinerary">NW</field>
+        </record>
+
+    </data>
+</openerp>

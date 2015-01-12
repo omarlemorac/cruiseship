@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="departure_requisition_form_view">
+          <field name="name">cruise.departure.form</field>
+          <field name="model">cruise.departure</field>
+          <field name="priority">20</field>
+          <field name="inherit_id" ref="cruiseship.view_departure_ship_form" />
+          <field name="arch" type="xml">
+              <xpath expr="//field[@name='max_capacity']" position="after" >
+                  <field name="availability" />
+                  <field name="availability_perc" widget="progressbar" />
+              </xpath>
+              <notebook position="inside">
+                  <page string="Requisition">
+                      <field name="requisition_ids" nolabel="1" >
+                          <form>
+                              <field name="rq_no" />
+                              <field name="total_spaces" />
+                              <field name="date_order" />
+                              <field name="date_limit" />
+                          </form>
+                          <tree>
+                              <field name="rq_no" />
+                              <field name="total_spaces" />
+                              <field name="date_order" />
+                              <field name="date_limit" />
+                          </tree>
+                      </field>
+                  </page>
+              </notebook>
+          </field>
+        </record>
+        <record model="ir.ui.view" id="departure_requisition_tree_view">
+          <field name="name">cruise.departure.form</field>
+          <field name="model">cruise.departure</field>
+          <field name="priority">25</field>
+          <field name="inherit_id" ref="cruiseship.view_departure_list_view" />
+          <field name="arch" type="xml">
+              <field name="departure_date" position="after" >
+                  <field name="availability" />
+                  <field name="availability_perc" widget="progressbar" />
+              </field>
+
+          </field>
+        </record>
+    </data>
+</openerp>

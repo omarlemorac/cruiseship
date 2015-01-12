@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+        <menuitem id="cruiseship_management_menu" name="Cruise Ship Management"/>
+        <menuitem id="cruiseship_configuration_menu" name="Configuration" sequence="20" parent ="cruiseship_management_menu"/>
+        
+        
+        <!--====================================================
+							Ship	
+		==================================================== -->
+		
+		<record model="ir.ui.view" id="view_cruise_ship_form">
+			<field name="name">cruise.ship.form</field>
+			<field name="model">cruise.ship</field>
+            <field name="arch" type="xml">
+                <form string="Ship" version="7.0">
+                    <sheet>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="name" string="Ship Name"/>
+                            </div>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="max_pax" colspan="1"/>
+                                <field name="sequence" select="1"/>
+                                <field name="check_max_capacity"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Observations">
+                                <field name="observations" widget="html" />
+                            </page>
+                            <page string="Cabins">
+                                <field name="cabin_ids" >
+                                    <form string="Cabin">
+                                        <field name="name" />
+                                        <field name="cabin_type_id" />
+                                        <field name="max_adult" />
+                                        <field name="max_child" />
+                                    </form>
+                                    <tree string="Cabin" editable="bottom">
+                                        <field name="name" />
+                                        <field name="cabin_type_id" />
+                                        <field name="max_adult" />
+                                        <field name="max_child" />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="view_cruise_ship_tree">
+			<field name="name">cruise.ship.tree</field>
+			<field name="model">cruise.ship</field>
+			<field name="arch" type="xml">
+				<tree string="Requisition">
+					<field name="name" colspan="1"/>
+					<field name="sequence" select="1"/>
+				</tree>
+			</field>
+		</record>
+		<record model="ir.actions.act_window" id="open_cruise_ship_form_tree">
+			<field name="name">Ship</field>
+			<field name="res_model">cruise.ship</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<menuitem name="Ship"
+		          id="menu_open_cruise_ship_form_tree" 
+				  action="open_cruise_ship_form_tree"
+				  sequence="21"
+				  parent="cruiseship_configuration_menu"/>
+        <!--====================================================
+							Departure	
+		==================================================== -->
+		<record model="ir.ui.view" id="view_departure_list_view">
+			<field name="name">departure.tree</field>
+            <field name="model">cruise.departure</field>
+            <field name="arch" type="xml">
+                <tree string="Departure">
+                    <field name="name"/>
+                    <field name="departure_date" />
+                </tree>
+            </field>
+        </record>
+		<record model="ir.ui.view" id="view_departure_ship_form">
+			<field name="name">departure.form</field>
+			<field name="model">cruise.departure</field>
+            <field name="arch" type="xml">
+                <form string="Departure" version="7.0">
+                    <sheet>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="name" string="Departure"/>
+                            </div>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="departure_date" />
+                            <field name="arrival_date" />
+                            <field name="ship_id" />
+                            <field name="max_capacity" />
+                            <field name="itinerary" />
+                        </group>
+                        <notebook>
+                            <page string="Observations">
+                                <field name="observations" />
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+			</field>
+        </record>
+		<record model="ir.actions.act_window" id="open_departure_ship_form_tree">
+			<field name="name">Departure</field>
+			<field name="res_model">cruise.departure</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<menuitem name="Departure"
+		          id="menu_open_cruise_departure_form_tree" 
+				  action="open_departure_ship_form_tree"
+				  sequence="22"
+				  parent="cruiseship_configuration_menu"/>
+    </data>
+</openerp>

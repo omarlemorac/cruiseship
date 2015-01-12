@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <menuitem id="creservation_configuration_menu" name="Reservation" sequence="25" 
+            parent ="cruiseship.cruiseship_management_menu"/>
+
+        <!--====================================================
+						Requisition	
+		==================================================== -->
+		
+        <record id="cruise_reservation_search_form_view" model="ir.ui.view">
+            <field name="name">cruise.reservation.searh.form</field>
+            <field name="model">cruise.rq</field>
+            <field name="arch" type="xml">
+                <search string="Date limit today">
+                    <filter string="Date limit" 
+                       domain="[('date_limit','&lt;=',((context_today()).strftime('%%Y-%%m-%%d')))]"/>
+                    <separator />
+                    <group expand="0" string="Group by ..">
+                        <filter string="Departure" domain="[]" context="{'group_by':'departure_id'}" />
+                    </group>
+                </search>
+            </field>
+		</record>
+
+		<record model="ir.ui.view" id="view_cruise_ship_form">
+			<field name="name">cruise.reservation.form</field>
+			<field name="model">cruise.rq</field>
+            <field name="arch" type="xml">
+                <form string="Requisition" version="7.0">
+                    <sheet>
+                        <div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="rq_no" string="Requisition No"/>
+                            </div>
+                            <h1>
+                                <field name="rq_no"/>
+                            </h1>
+                            <label for="departure_id" class="oe_edit_only" />
+                            <h2><field name="departure_id" /></h2>
+                            <label for="order_contact_id" class="oe_edit_only" />
+                            <h3><field name="order_contact_id" /></h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="availability"  />
+                                <field name="max_capacity"  />
+                                <field name="adults"  />
+                                <field name="children"  />
+                                <field name="young"  />
+                            </group>
+                            <group>
+                                <field name="availability_perc" widget="progressbar" />
+                                <field name="lead_id" />
+                                <field name="date_order" />
+                                <field name="date_limit"  />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="view_cruise_rq_tree">
+			<field name="name">cruise.rq.tree</field>
+			<field name="model">cruise.rq</field>
+			<field name="arch" type="xml">
+				<tree string="Requisition" 
+                      colors="red:date_limit&lt;=current_date;"
+                >
+					<field name="rq_no" colspan="1"/>
+					<field name="departure_id" select="1"/>
+                    <field name="date_order" />
+                    <field name="date_limit"  />
+				</tree>
+			</field>
+		</record>
+		<record model="ir.actions.act_window" id="open_cruise_rq_form_tree">
+			<field name="name">Ship</field>
+			<field name="res_model">cruise.rq</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="cruise_reservation_search_form_view"/>
+		</record>
+		<menuitem name="Requisition"
+		          id="menu_open_cruise_ship_rq_tree" 
+				  action="open_cruise_rq_form_tree"
+				  sequence="21"
+				  parent="creservation_configuration_menu"/>
+    </data>
+</openerp>
