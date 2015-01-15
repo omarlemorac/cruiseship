@@ -134,6 +134,10 @@ class departure(osv.Model):
 
     _columns = {
         'name':fields.char('Name', 255, help='Name', required=True),
+        'standar_name':fields.function(_standar_name
+            , method=True, store=True, fnct_inv=None, fnct_search=None
+            , string='Standar name', help='Standarized ship and date name'),
+
         'departure_date':fields.date('Departure date', help='Departure date',
             required=True),
         'arrival_date':fields.date('Arrival date', help='Arrival date',

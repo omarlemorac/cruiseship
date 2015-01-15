@@ -137,7 +137,20 @@ class requisition(osv.Model):
         req_obj = self.browse(cr, uid, ids)
 
         for req in req_obj:
-            res[req.id] = req['adults'] + req['young'] + req['children']
+            values = {}
+            #res[req.id] = req['adults'] + req['young'] + req['children']
+            adults = 0
+            young = 0
+            children = 0
+            for rline in req.cruise_reservation_line_ids:
+                adults += rline.adults
+                young += rline.young
+                children += rline.children
+            values['adults'] = adults
+            values['young'] = young
+            values['children'] = children
+            values['total_spaces'] = adults + young + children
+            res[req.id] = values
         return res
 
     def _total_price(self, cr, uid, ids, field_name, arg, context=None):
@@ -179,10 +192,15 @@ class requisition(osv.Model):
         'availability_perc':fields.related('departure_id', 'availability_perc'
             ,readonly=True, string='Availability percentage in departure'
             , help='Availability on departure'),
-        'adults':fields.integer('Adult', help='Number of adults'
-            ,required=True),
-        'children':fields.integer('Children',required=True, help='Number of children'),
-        'young':fields.integer('Young',required=True, help='Number of young'),
+        'adults':fields.function(_total_spaces, method=True, store=False
+            , fnct_inv=None, fnct_search=None, string='Adults'
+            , help='Number of adults', multi="total_spaces"),
+        'children':fields.function(_total_spaces, method=True, store=False
+            , fnct_inv=None, fnct_search=None, string='Children'
+            , help='Number of children', multi="total_spaces"),
+        'young':fields.function(_total_spaces, method=True, store=False
+            , fnct_inv=None, fnct_search=None, string='Young'
+            , help='Number of young', multi="total_spaces"),
         'adult_price_unit':fields.float('Adult price', required=True
             ,digits_compute=dp.get_precision('Product Price')
             ,help='fields help'),
@@ -203,6 +221,8 @@ class requisition(osv.Model):
               ,('wlist','Waiting list')
               ,('request','Request')
               ,('confirm','Confirm')
+              ,('payment','Payment')
+              ,('paid','Paid')
               ,('cancel','Cancel')
               ,('done','Done')
               ]
@@ -210,7 +230,7 @@ class requisition(osv.Model):
 
         'total_spaces':fields.function(_total_spaces, method=True, store=False
             , fnct_inv=None, fnct_search= None, string='Total spaces'
-            , help='Total spaces reserved'
+            , help='Total spaces reserved', multi="total_spaces"
             ),
 
         'adult_price_total':fields.function(_total_price, method=True, store=False
@@ -283,9 +303,6 @@ class reservation_line(osv.Model):
             domain="[('ship_id', '=', line_departure_ship_id)]"),
         'shared':fields.boolean('Shared Cabin'
             , help='Mark if passenger is willing to share cabin'),
-
-
-
             }
 
 class cruise_cabin(osv.Model):

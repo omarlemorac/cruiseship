@@ -29,7 +29,7 @@
             <field name="arch" type="xml">
                 <form string="Requisition" version="7.0">
                     <header>
-                        <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,wlist,request,confirmed,cancel,done" />
+                        <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,wlist,request,confirmed,payment,paid,cancel,done" />
                     </header>
                     <sheet>
                         <div class="oe_title">
