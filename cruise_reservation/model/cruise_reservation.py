@@ -20,7 +20,7 @@
 ##############################################################################
 from osv import osv, fields
 import openerp.addons.decimal_precision as dp
-
+import operator as O
 
 class departure(osv.Model):
 
@@ -45,13 +45,33 @@ class departure(osv.Model):
             res[dep.id] = val
         return res
 
+    def _search_availability(self, cr, uid, ids, field_name, args, context=None):
+        if context is None:
+            context = {}
+        obj = self.search(cr, uid, [])
+        ava = self._availability(cr, uid, obj, field_name, args)
+        r_ids = []
+        for a, avd in ava.items():
+            av = avd['availability']
+            for arg in args:
+                if arg[0] == 'availability':
+                    if arg[1] == '=':
+                        if int(av) == int(arg[2]):
+                            r_ids.append(a)
+                    if arg[1] == '<':
+                        if int(av) < int(arg[2]):
+                            r_ids.append(a)
+                    if arg[1] == '>':
+                        if int(av) > int(arg[2]):
+                            r_ids.append(a)
+        return [('id', 'in', r_ids)]
 
     _columns = {
             'requisition_ids':fields.one2many('cruise.rq'
                 , 'departure_id', 'Requisitions', help='Requisitions'),
             'availability':fields.function(_availability
                 , method=True, store=False, fnct_inv=None
-                , fnct_search=None, string='Availability'
+                , fnct_search=_search_availability, string='Availability'
                 , help='Availability', type='integer'
                 , multi='check_availability'),
             'availability_perc':fields.function(_availability
@@ -147,6 +167,10 @@ class requisition(osv.Model):
            , help='Choose the lead for this requisition.'),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
             , help='Departure', required=True),
+        'departure_ship_id':fields.related('departure_id', 'ship_id'
+            , readonly=True,type="many2one", relation="cruise.ship"
+            , help='Helper field ship'),
+
         'max_capacity':fields.related('departure_id', 'max_capacity'
             ,readonly=True, string='Maximum capacity', help='Maximum capacity'),
         'availability':fields.related('departure_id', 'availability'
@@ -159,13 +183,6 @@ class requisition(osv.Model):
             ,required=True),
         'children':fields.integer('Children',required=True, help='Number of children'),
         'young':fields.integer('Young',required=True, help='Number of young'),
-        'state': fields.selection([
-               ('draft','Draft')
-              ,('confirm','Confirm')
-              ,('cancel','Cancel')
-              ,('done','Done')
-              ]
-            , 'State',readonly=True),
         'adult_price_unit':fields.float('Adult price', required=True
             ,digits_compute=dp.get_precision('Product Price')
             ,help='fields help'),
@@ -177,6 +194,20 @@ class requisition(osv.Model):
             ,help='fields help'),
         'date_order':fields.date('Date order',required=True, help='Date order'),
         'date_limit':fields.date('Date limit',required=True, help='Date limit'),
+        'cruise_reservation_line_ids':fields.one2many('cruise.reservation.line'
+            , 'rq_id', 'Reservation lines'
+            , help='Reservation lines'),
+
+        'state': fields.selection([
+               ('draft','Draft')
+              ,('wlist','Waiting list')
+              ,('request','Request')
+              ,('confirm','Confirm')
+              ,('cancel','Cancel')
+              ,('done','Done')
+              ]
+            , 'State',readonly=True),
+
         'total_spaces':fields.function(_total_spaces, method=True, store=False
             , fnct_inv=None, fnct_search= None, string='Total spaces'
             , help='Total spaces reserved'
@@ -224,5 +255,50 @@ class requisition(osv.Model):
             res['young_price_unit'] = departure_obj.young_price_normal
         return {'value':res}
 
+class reservation_line(osv.Model):
+
+    '''Reservation detail for cabin'''
+
+    _name = 'cruise.reservation.line'
+
+    _columns = {
+        'rq_id':fields.many2one('cruise.rq', 'Requisition Id'
+            , help='Id for requisition'),
+        'line_departure_ship_id':fields.related('rq_id'
+            , 'departure_ship_id', readonly=True
+            , relation="cruise.ship", string='Ship', type="many2one"
+            , help='Helper field to filter cabins'),
+
+        'line_departure_id':fields.related('rq_id'
+            , 'departure_id', readonly=True
+            , relation="cruise.departure", string='Ship', type="many2one"
+            , help='Helper field to filter cabins'),
+
+        'adults':fields.integer('Adult', help='Number of adults'
+            ,required=True),
+        'children':fields.integer('Children',required=True, help='Number of children'),
+        'young':fields.integer('Young',required=True, help='Number of young'),
+        'cabin_ids':fields.many2many('cruise.cabin', 'reservation_cabin_rel',
+            'rq_line_id', 'cabin_id', 'Cabins', help='Cabins reserved',
+            domain="[('ship_id', '=', line_departure_ship_id)]"),
+        'shared':fields.boolean('Shared Cabin'
+            , help='Mark if passenger is willing to share cabin'),
+
+
+
+            }
+
+class cruise_cabin(osv.Model):
+
+    '''Inherits cruise.cabin to add m2m relationship with reservation line'''
+
+    _inherit = 'cruise.cabin'
+
+    _columns = {
+        'res_ids':fields.many2many('cruise.reservation.line', 'reservation_cabin_rel',
+            'cabin_id','rq_line_id','Reservations',
+            help='Reservations made to cabin'),
+
+        }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

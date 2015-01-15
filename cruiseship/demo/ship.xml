@@ -81,19 +81,44 @@
 						Departures
         ==================================================== -->
         <record model="cruise.departure" id="cruise_departure_d1_demo">
-            <field name="name" >Beagle/2015-01-10</field>
+            <field name="name" >Samba/2015-01-13</field>
             <field name="departure_date" >2015-01-13</field>
             <field name="arrival_date" >2015-01-20</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="itinerary">SE</field>
+            <field name="child_price_normal">2825.23</field>
+            <field name="adult_price_normal">3124.54</field>
+            <field name="young_price_normal">3124.54</field>
         </record>
         <record model="cruise.departure" id="cruise_departure_d2_demo">
-            <field name="name" >Beagle/2015-01-10</field>
+            <field name="name" >Samba/2015-01-20</field>
             <field name="departure_date" >2015-01-20</field>
             <field name="arrival_date" >2015-01-27</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="itinerary">NW</field>
+            <field name="child_price_normal">2832.45</field>
+            <field name="adult_price_normal">3004.21</field>
+            <field name="young_price_normal">3000.54</field>
         </record>
-
+        <record model="cruise.departure" id="cruise_departure_d3_demo">
+            <field name="name" >Beagle/2015-01-13</field>
+            <field name="departure_date" >2015-01-13</field>
+            <field name="arrival_date" >2015-01-20</field>
+            <field name="ship_id" ref="cruise_ship_beagle_demo" />
+            <field name="itinerary">NW</field>
+            <field name="child_price_normal">2832.45</field>
+            <field name="adult_price_normal">3004.21</field>
+            <field name="young_price_normal">3000.54</field>
+        </record>
+        <record model="cruise.departure" id="cruise_departure_d4_demo">
+            <field name="name" >Beagle/2015-01-20</field>
+            <field name="departure_date" >2015-01-20</field>
+            <field name="arrival_date" >2015-01-27</field>
+            <field name="ship_id" ref="cruise_ship_beagle_demo" />
+            <field name="itinerary">SE</field>
+            <field name="child_price_normal">2832.45</field>
+            <field name="adult_price_normal">3004.21</field>
+            <field name="young_price_normal">3000.54</field>
+        </record>
     </data>
 </openerp>

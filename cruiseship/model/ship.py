@@ -21,7 +21,7 @@
 
 from osv import osv, fields
 import openerp.addons.decimal_precision as dp
-
+import datetime
 
 class cruise_ship(osv.Model):
     _name = "cruise.ship"
@@ -124,12 +124,23 @@ class departure_ship_line(osv.Model):
 class departure(osv.Model):
     _name = 'cruise.departure'
     _description = 'Cruise Departure'
+    def _standar_name(self, cr, uid, ids, field_name, args, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        for dep in self.browse(cr, uid, ids):
+            res[dep.id] = "%s/%s" % (dep.ship_id.name, dep.departure_date)
+        return res
+
     _columns = {
-        'name':fields.char('Name', 255, help='fields help'),
-        'departure_date':fields.date('Departure date', help='Departure date'),
-        'arrival_date':fields.date('Arrival date', help='Arrival date'),
+        'name':fields.char('Name', 255, help='Name', required=True),
+        'departure_date':fields.date('Departure date', help='Departure date',
+            required=True),
+        'arrival_date':fields.date('Arrival date', help='Arrival date',
+            required=True),
         'observations':fields.html('Observations', help='Observations'),
-        'ship_id':fields.many2one('cruise.ship', 'Ship', help='Add a ship for departure'),
+        'ship_id':fields.many2one('cruise.ship', 'Ship',
+            help='Add a ship for departure', required=True),
         'itinerary':fields.char('Itinerary', 50, help='Itinerary for this departure '),
         'max_capacity':fields.related(
               'ship_id'
@@ -147,6 +158,22 @@ class departure(osv.Model):
         'child_price_normal':fields.float('Child price', required=True
             ,digits_compute=dp.get_precision('Product Price')
             ,help='fields help'),
-
-
+        'standar_name':fields.function(_standar_name, method=True, store=False,
+            fnct_inv=None, fnct_search=None, string='Name',
+            help='Standar name', type='string'),
             }
+
+    _defaults = {
+        'departure_date':fields.date.context_today,
+        'arrival_date': fields.date.context_today,
+            }
+
+    def onchange_ship(self, cr, uid, ids, ship_id, departure_date, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        if ship_id:
+            ship_obj = self.pool.get('cruise.ship').browse(cr, uid, ship_id)
+            res['name'] = "%s/%s" %(ship_obj.name,departure_date)
+        return {'value':res}
+

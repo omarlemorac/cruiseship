@@ -84,7 +84,7 @@
             <field name="model">cruise.departure</field>
             <field name="arch" type="xml">
                 <tree string="Departure">
-                    <field name="name"/>
+                    <field name="standar_name"/>
                     <field name="departure_date" />
                 </tree>
             </field>
@@ -104,9 +104,9 @@
                             </h1>
                         </div>
                         <group>
-                            <field name="departure_date" />
+                            <field name="departure_date" on_change="onchange_ship(ship_id, departure_date)"/>
                             <field name="arrival_date" />
-                            <field name="ship_id" />
+                            <field name="ship_id" on_change="onchange_ship(ship_id, departure_date)" />
                             <field name="max_capacity" />
                             <field name="itinerary" />
                         </group>
