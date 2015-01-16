@@ -34,10 +34,14 @@ class departure(osv.Model):
             context = {}
         res = {}
         departure_obj = self.browse(cr, uid, ids)
+
+
         for dep in departure_obj:
             dep_total_spaces = 0
             val = {}
-            for req in dep.requisition_ids:
+            reqs = [req for req in dep.requisition_ids if req.state in
+                    ('confirm','request', 'payment')]
+            for req in reqs:
                 dep_total_spaces += req.total_spaces
             val['availability_perc'] = ((float(dep.max_capacity) - float(dep_total_spaces)) / \
                     float(dep.max_capacity)) * 100
@@ -173,19 +177,25 @@ class requisition(osv.Model):
 
 
     _columns = {
-        'rq_no': fields.char('Reservation No', size=64, required=True, select=True),
+        'rq_no': fields.char('Reservation No'
+            , size=64, required=True
+            , readonly=True, states={'draft':[('readonly', False)]}),
+        'reference':fields.char('Reference', 255, help='Passenger reference'),
         'order_contact_id':fields.many2one('res.partner'
-            , string='Ordering contact', help='Ordering contact'),
+            , string='Ordering contact', help='Ordering contact'
+            , required=True, readonly=True, states={'draft':[('readonly', False)]}),
         'lead_id':fields.many2one('crm.lead', 'Lead'
            , help='Choose the lead for this requisition.'),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
-            , help='Departure', required=True),
+            , help='Departure', required=True, readonly=True
+            , states={'draft':[('readonly', False)]}),
         'departure_ship_id':fields.related('departure_id', 'ship_id'
             , readonly=True,type="many2one", relation="cruise.ship"
             , help='Helper field ship'),
 
         'max_capacity':fields.related('departure_id', 'max_capacity'
-            ,readonly=True, string='Maximum capacity', help='Maximum capacity'),
+            ,readonly=True, string='Maximum capacity', help='Maximum capacity'
+            ,type="integer"),
         'availability':fields.related('departure_id', 'availability'
             ,readonly=True, string='Availability', type="integer"
             , help='Availability on departure'),
@@ -194,13 +204,16 @@ class requisition(osv.Model):
             , help='Availability on departure'),
         'adults':fields.function(_total_spaces, method=True, store=False
             , fnct_inv=None, fnct_search=None, string='Adults'
-            , help='Number of adults', multi="total_spaces"),
+            , help='Number of adults', multi="total_spaces"
+            , type="integer"),
         'children':fields.function(_total_spaces, method=True, store=False
             , fnct_inv=None, fnct_search=None, string='Children'
-            , help='Number of children', multi="total_spaces"),
+            , help='Number of children', multi="total_spaces"
+            , type="integer"),
         'young':fields.function(_total_spaces, method=True, store=False
             , fnct_inv=None, fnct_search=None, string='Young'
-            , help='Number of young', multi="total_spaces"),
+            , help='Number of young', multi="total_spaces"
+            , type="integer"),
         'adult_price_unit':fields.float('Adult price', required=True
             ,digits_compute=dp.get_precision('Product Price')
             ,help='fields help'),
@@ -210,11 +223,13 @@ class requisition(osv.Model):
         'child_price_unit':fields.float('Child price', required=True
             ,digits_compute=dp.get_precision('Product Price')
             ,help='fields help'),
-        'date_order':fields.date('Date order',required=True, help='Date order'),
+        'date_order':fields.date('Date order',required=True, help='Date order',
+            readonly=True),
         'date_limit':fields.date('Date limit',required=True, help='Date limit'),
         'cruise_reservation_line_ids':fields.one2many('cruise.reservation.line'
             , 'rq_id', 'Reservation lines'
-            , help='Reservation lines'),
+            , help='Reservation lines', readonly=True
+            , states={'draft':[('readonly', False)]}),
 
         'state': fields.selection([
                ('draft','Draft')
@@ -275,6 +290,86 @@ class requisition(osv.Model):
             res['young_price_unit'] = departure_obj.young_price_normal
         return {'value':res}
 
+
+    def cabin_sharing(pass1, pass2, cabins):
+        if context is None:
+            context = {}
+
+        return
+
+
+    def _search_departure_cabins(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        msg = ""
+
+        reserved_cabins = {'male_sharing':[],'female_sharing':[], 'no_sharing':[]}
+        for req in self.browse(cr, uid, ids, context=context):
+            reservation_ids = self.search(cr, uid
+                    , [('state', 'in', ('request', 'confirm', 'payment', 'paid',
+                        'done')),
+                       ('departure_id.id', '=',req.departure_id.id),
+                       ('id', '!=', ids[0]),
+                        ], context=context)
+            for rs in self.browse(cr, uid, reservation_ids):
+                for rs_line in rs.cruise_reservation_line_ids:
+                    for cabin in rs_line.cabin_ids:
+                        reserved_cabins[rs_line.sharing].append((rs, cabin))
+
+            for line in req.cruise_reservation_line_ids:
+                if line.sharing == 'no_sharing':
+                    if cabin in [r[1] for r in reserved_cabins['no_sharing']]:
+                        msg = "%s are already reserved cabins without sharing"\
+                              % ", ".join(["%s %s" % (n[0].rq_no, n[1].name) for n in
+                                    reserved_cabins['no_sharing']])
+
+                if line.sharing == 'male_sharing':
+                    print "================================"
+                    print "Male"
+                    print "================================"
+
+                    print line.adults
+                    print "adults"
+                    print reserved_cabins['male_sharing']
+                    print "male sharing"
+                    #Check sharing same cabin
+                    if cabin in [r[1] for r in reserved_cabins['male_sharing']]:
+                        print [c for c in reserved_cabins['male_sharing']]
+
+                if line.sharing == 'female_sharing':
+                    print "================================"
+                    print "feMale"
+                    print "================================"
+                    print line.adults
+                    print [c.adults for c in reserved_cabins['female_sharing']]
+                    print reserved_cabins['female_sharing']
+
+
+
+
+
+
+    def action_request(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        for req in self.browse(cr, uid, ids, context=context):
+            if req.total_spaces < 1:
+                raise osv.except_osv('Warning', 'You must have at least one passenger')
+
+            for line in req.cruise_reservation_line_ids:
+                if not line.cabin_ids:
+                    raise osv.except_osv('Warning', 'Cabins must be setted')
+        self._search_departure_cabins(cr, uid, ids)
+        return self.write(cr, uid, ids, {'state':'draft'})
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        raise osv.except_osv('Warning',' you cant cancel. :(')
+        return self.write(cr, uid, ids, {'state':'cancel'})
+
 class reservation_line(osv.Model):
 
     '''Reservation detail for cabin'''
@@ -282,6 +377,8 @@ class reservation_line(osv.Model):
     _name = 'cruise.reservation.line'
 
     _columns = {
+        'name':fields.char('Name', 255, help='ReferenceX', required=False,
+            placeholder="e.g. ReferenceX#"),
         'rq_id':fields.many2one('cruise.rq', 'Requisition Id'
             , help='Id for requisition'),
         'line_departure_ship_id':fields.related('rq_id'
@@ -291,7 +388,7 @@ class reservation_line(osv.Model):
 
         'line_departure_id':fields.related('rq_id'
             , 'departure_id', readonly=True
-            , relation="cruise.departure", string='Ship', type="many2one"
+            , relation="cruise.departure", string='Departure', type="many2one"
             , help='Helper field to filter cabins'),
 
         'adults':fields.integer('Adult', help='Number of adults'
@@ -301,9 +398,14 @@ class reservation_line(osv.Model):
         'cabin_ids':fields.many2many('cruise.cabin', 'reservation_cabin_rel',
             'rq_line_id', 'cabin_id', 'Cabins', help='Cabins reserved',
             domain="[('ship_id', '=', line_departure_ship_id)]"),
-        'shared':fields.boolean('Shared Cabin'
-            , help='Mark if passenger is willing to share cabin'),
-            }
+        'sharing':fields.selection([
+            ('male_sharing', 'Male sharing'),
+            ('female_sharing', 'Female sharing'),
+            ('no_sharing', 'No sharing'),
+            ], string='Sharing type', required=True,
+            help='Select the sharing type for cabin/s'),
+
+        }
 
 class cruise_cabin(osv.Model):
 
