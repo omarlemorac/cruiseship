@@ -305,47 +305,71 @@ class requisition(osv.Model):
         msg = ""
 
         reserved_cabins = {'male_sharing':[],'female_sharing':[], 'no_sharing':[]}
+        av = {}
+        availability = {}
         for req in self.browse(cr, uid, ids, context=context):
+            for cabin in req.departure_id.ship_id.cabin_ids:
+                av.setdefault(cabin.id, [cabin,])
+                availability.setdefault(cabin.id
+                        , [cabin.max_adult,cabin.max_adult,cabin.max_child])
+                reservation.setdefault(cabin.id
+                        , [0,0,0])
             reservation_ids = self.search(cr, uid
                     , [('state', 'in', ('request', 'confirm', 'payment', 'paid',
                         'done')),
-                       ('departure_id.id', '=',req.departure_id.id),
+                       ('departure_id.id', '=',req.departure_id.id), #la misma salida
                        ('id', '!=', ids[0]),
                         ], context=context)
             for rs in self.browse(cr, uid, reservation_ids):
                 for rs_line in rs.cruise_reservation_line_ids:
                     for cabin in rs_line.cabin_ids:
-                        reserved_cabins[rs_line.sharing].append((rs, cabin))
+                        av[cabin.id].append(rs_line)
+                        reserved_cabins[rs_line.sharing].append((rs, cabin, rs_line))
+                        try:
+                            total_cabins.remove(cabin)
+                        except:
+                            pass
+
 
             for line in req.cruise_reservation_line_ids:
                 if line.sharing == 'no_sharing':
-                    if cabin in [r[1] for r in reserved_cabins['no_sharing']]:
-                        msg = "%s are already reserved cabins without sharing"\
-                              % ", ".join(["%s %s" % (n[0].rq_no, n[1].name) for n in
-                                    reserved_cabins['no_sharing']])
-
-                if line.sharing == 'male_sharing':
-                    print "================================"
-                    print "Male"
-                    print "================================"
-
-                    print line.adults
-                    print "adults"
-                    print reserved_cabins['male_sharing']
-                    print "male sharing"
-                    #Check sharing same cabin
-                    if cabin in [r[1] for r in reserved_cabins['male_sharing']]:
-                        print [c for c in reserved_cabins['male_sharing']]
-
-                if line.sharing == 'female_sharing':
-                    print "================================"
-                    print "feMale"
-                    print "================================"
-                    print line.adults
-                    print [c.adults for c in reserved_cabins['female_sharing']]
-                    print reserved_cabins['female_sharing']
+                    av_adults = 0
+                    av_children = 0
+                    for cabin in rs_line.cabin_ids:
+                        av_adults += reservation[cabin.id][0]
+                        av_children +=reservation[cabin.id][2]
+                    if line.adults + line.young > av_adults:
+                        raise osv.except_osv('Warning'
+                        , 'Maximum adult capacity reached')
+                    if line.children > av_children:
+                        raise osv.except_osv('Warning'
+                        , 'Maximum children capacity reached')
 
 
+
+            for k,v in av.items():
+                print "Adults %d Children %d" % (v[0].max_adult, v[0].max_child)
+                sum_adults = 0
+                sum_child = 0
+                for x in v[1:]:
+                    print x, x.sharing
+                    if x.sharing == 'no_sharing':
+                        availability[k] = (0,0,0) #male,female,children
+                        continue
+                    #if x.sharing == 'male_sharing'
+
+            print availability
+        return False
+
+#male sharing only allows adults
+#female sharing only allows adults
+"""
+                        if cabin in [r[1] for r in reserved_cabins['no_sharing']]:
+                            msg = "%s are already reserved cabins without sharing"\
+                                  % ", ".join(["%s %s" % (n[0].rq_no, n[1].name) for n in
+                                        reserved_cabins['no_sharing']])
+"""
+#        return not msg and True or msg
 
 
 
