@@ -21,6 +21,7 @@
 from osv import osv, fields
 import openerp.addons.decimal_precision as dp
 import operator as O
+import pdb
 
 class departure(osv.Model):
 
@@ -230,6 +231,10 @@ class requisition(osv.Model):
             , 'rq_id', 'Reservation lines'
             , help='Reservation lines', readonly=True
             , states={'draft':[('readonly', False)]}),
+        'account_voucher_ids':fields.one2many('account.voucher'
+                , 'cruise_reservation_id', 'Payments'
+                , help='Payments for this reservation'),
+
 
         'state': fields.selection([
                ('draft','Draft')
@@ -297,86 +302,108 @@ class requisition(osv.Model):
 
         return
 
-
-    def _search_departure_cabins(self, cr, uid, ids, context=None):
+    def _read_capacity(self, cr, uid, ids,context=None):
+        """Return capacity of cabins _in departure"""
         if context is None:
             context = {}
-
-        msg = ""
-
-        reserved_cabins = {'male_sharing':[],'female_sharing':[], 'no_sharing':[]}
-        av = {}
-        availability = {}
+        res = {}
         for req in self.browse(cr, uid, ids, context=context):
             for cabin in req.departure_id.ship_id.cabin_ids:
-                av.setdefault(cabin.id, [cabin,])
-                availability.setdefault(cabin.id
-                        , [cabin.max_adult,cabin.max_adult,cabin.max_child])
-                reservation.setdefault(cabin.id
-                        , [0,0,0])
+                res[cabin.id] = (cabin.max_adult, cabin.max_child)
+        return res
+    def _cabin_dict(self, cr, uid, ids,context=None):
+        """Return capacity of cabins _in departure"""
+        if context is None:
+            context = {}
+        res = {}
+        for req in self.browse(cr, uid, ids, context=context):
+            for cabin in req.departure_id.ship_id.cabin_ids:
+                res[cabin.id] = []
+        return res
+
+    def _read_reservations(self, cr, uid, ids, context=None):
+        """docstring for _read_reservations"""
+        if context is None:
+            context = {}
+        reservations = []
+        res = []
+        r = []
+        for req in self.browse(cr, uid, ids, context=context):
+            req_d = []
+            req_d.append(req.rq_no)
             reservation_ids = self.search(cr, uid
                     , [('state', 'in', ('request', 'confirm', 'payment', 'paid',
                         'done')),
                        ('departure_id.id', '=',req.departure_id.id), #la misma salida
                        ('id', '!=', ids[0]),
                         ], context=context)
+
             for rs in self.browse(cr, uid, reservation_ids):
+                line = []
                 for rs_line in rs.cruise_reservation_line_ids:
+                    line.append((rs.rq_no, rs_line.id, rs_line.sharing,
+                        rs_line.adults + rs_line.young))
+                    cabins = []
                     for cabin in rs_line.cabin_ids:
-                        av[cabin.id].append(rs_line)
-                        reserved_cabins[rs_line.sharing].append((rs, cabin, rs_line))
-                        try:
-                            total_cabins.remove(cabin)
-                        except:
-                            pass
+                        cabins.append(cabin.id)
+                    line.append(cabins)
+                req_d.append(line)
+            reservations.append(r)
+            res.append(req_d)
+        return res
 
+    def _check_self_reservation(self, cr, uid, active_id):
+        """Compare availability _with reserved_cabins."""
 
-            for line in req.cruise_reservation_line_ids:
-                if line.sharing == 'no_sharing':
-                    av_adults = 0
-                    av_children = 0
-                    for cabin in rs_line.cabin_ids:
-                        av_adults += reservation[cabin.id][0]
-                        av_children +=reservation[cabin.id][2]
-                    if line.adults + line.young > av_adults:
-                        raise osv.except_osv('Warning'
-                        , 'Maximum adult capacity reached')
-                    if line.children > av_children:
-                        raise osv.except_osv('Warning'
-                        , 'Maximum children capacity reached')
-
-
-
-            for k,v in av.items():
-                print "Adults %d Children %d" % (v[0].max_adult, v[0].max_child)
-                sum_adults = 0
-                sum_child = 0
-                for x in v[1:]:
-                    print x, x.sharing
-                    if x.sharing == 'no_sharing':
-                        availability[k] = (0,0,0) #male,female,children
-                        continue
-                    #if x.sharing == 'male_sharing'
-
-            print availability
+        res_obj = self.browse(cr, uid, active_id)
+        print res_obj.rq_no
         return False
 
-#male sharing only allows adults
-#female sharing only allows adults
-"""
-                        if cabin in [r[1] for r in reserved_cabins['no_sharing']]:
-                            msg = "%s are already reserved cabins without sharing"\
-                                  % ", ".join(["%s %s" % (n[0].rq_no, n[1].name) for n in
-                                        reserved_cabins['no_sharing']])
-"""
-#        return not msg and True or msg
+    def _search_departure_cabins(self, cr, uid, ids, context=None):
+        """
+        male sharing only allows adults
+        female sharing only allows adults
 
+                                if cabin in [r[1] for r in reserved_cabins['no_sharing']]:
+                                    msg = "%s are already reserved cabins without sharing"\
+                                          % ", ".join(["%s %s" % (n[0].rq_no, n[1].name) for n in
+                                                reserved_cabins['no_sharing']])
+        """
+        if context is None:
+            context = {}
 
+        msg = ""
 
+        capacity = self._read_capacity(cr, uid, ids)
+        print "\n====================capacity==================="
+        print capacity
+        print self._cabin_dict(cr,uid, ids)
+        reserved_cabins = self._read_reservations(cr, uid, ids)
+
+        print reserved_cabins
+        print "stop"
+
+        """basic validation. Maximum capacity"""
+        '''
+        for line in req.cruise_reservation_line_ids:
+            av_adults = 0
+            av_children = 0
+            if line.adults + line.young > capacity[cabin.id][0]:
+                raise osv.except_osv('Warning'
+                , 'Maximum adult capacity reached')
+            if line.children > capacity[cabin.id][1]:
+                raise osv.except_osv('Warning'
+                , 'Maximum children capacity reached')
+        '''
+
+        return False
 
     def action_request(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
+
+        self_reservation = self._check_self_reservation(cr, uid, context['active'] )
+        print self_reservation
 
         for req in self.browse(cr, uid, ids, context=context):
             if req.total_spaces < 1:
@@ -385,8 +412,12 @@ class requisition(osv.Model):
             for line in req.cruise_reservation_line_ids:
                 if not line.cabin_ids:
                     raise osv.except_osv('Warning', 'Cabins must be setted')
-        self._search_departure_cabins(cr, uid, ids)
-        return self.write(cr, uid, ids, {'state':'draft'})
+
+        return self._search_departure_cabins(cr, uid, ids)\
+                and self.write(cr, uid, ids, {'state':'draft'})\
+                or self.write(cr, uid, ids, {'state':'wlist'})
+
+        #return self.write(cr, uid, ids, {'state':'request'})
 
     def action_cancel(self, cr, uid, ids, context=None):
         if context is None:
