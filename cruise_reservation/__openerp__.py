@@ -50,6 +50,8 @@ This module allows the managent of reservation for cruises departures.
         'view/cruise_reservation_view.xml',
         'view/cruiseship_view.xml',
         'sequence/cruise_reservation_seq.xml',
+        'security/res_groups.xml',
+        'security/ir.model.access.csv',
     ],
     'js': [
     ],

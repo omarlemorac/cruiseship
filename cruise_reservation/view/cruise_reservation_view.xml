@@ -37,25 +37,25 @@
                     <sheet>
                         <div class="oe_title">
                             <div class="oe_edit_only">
-                                <label for="rq_no" string="Requisition No"/>
+                                <label for="reference" string="Reference"/>
                             </div>
-                            <h1>
-                                <field name="rq_no"/>
-                            </h1>
+                            <h1><field name="reference" placeholder="ReferenceNameX#" /></h1>
                             <label for="departure_id" class="oe_edit_only" />
                             <h2><field name="departure_id" on_change="onchange_departure(departure_id)" /></h2>
+                            <label for="rq_no" class="oe_edit_only" />
+                            <h3><field name="rq_no"/></h3>
                         </div>
                         <group>
                             <group>
                                 <field name="availability"  />
                                 <field name="max_capacity"  />
-                                <field name="date_order" />
-                                <field name="reference" placeholder="ReferenceNameX#" />
+                            </group>
+                            <group>
+                                <field name="order_contact_id" />
+                                <field name="user_id" />
                             </group>
                             <group>
                                 <field name="availability_perc" widget="progressbar" />
-                                <field name="order_contact_id" />
-                                <field name="date_limit"  />
                             </group>
                         </group>
                         <notebook>
@@ -85,10 +85,11 @@
                                     <form string="Lines" version="7.0">
                                         <group>
                                             <group>
-                                                <field name="adults" />
+                                                <field name="adults" on_change="onchange_pax(parent.ship_id, 'dummy')"   />
                                                 <field name="children" />
                                                 <field name="young" />
                                                 <field name="sharing" />
+                                                <field name="cabin_id" on_change="onchange_cabin(cabin_id)"/>
                                             </group>
                                             <group>
                                                 <field name="line_departure_id" />
@@ -96,18 +97,14 @@
                                                 <field name="name" placeholder="ReferenceNameX#"/>
                                             </group>
                                         </group>
-                                        <notebook>
-                                            <page string="Cabins" >
-                                                <field name="cabin_ids" colspan="4" />
-                                            </page>
-                                        </notebook>
                                     </form>
-                                    <tree string="Lines">
+                                    <tree string="Lines" editable="bottom">
                                         <field name="adults" />
                                         <field name="children" />
                                         <field name="young" />
-                                        <field name="cabin_ids" colspan="4" />
+                                        <field name="cabin_id" />
                                         <field name="sharing" />
+                                        <field name="line_departure_ship_id" />
                                     </tree>
                                 </field>
                             </page>
@@ -125,22 +122,39 @@
 
                                 </field>
                             </page>
+                            <!--
+                            <page string='Dates'>
+                                <group>
+                                    <field name="date_order" />
+                                    <field name="date_limit" invisible='1'  />
+                                </group>
+                                <group>
+                                    <field name="date_request" />
+                                    <field name="date_payment"  />
+                                    <field name="date_paid"  />
+                                </group>
+                            </page>
+                            -->
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
 			</field>
 		</record>
 		<record model="ir.ui.view" id="view_cruise_rq_tree">
 			<field name="name">cruise.rq.tree</field>
 			<field name="model">cruise.rq</field>
-			<field name="arch" type="xml">
+            <field name="arch" type="xml">
+                <!-- 
+                      colors="blue:date_limit&lt;=current_date;"
+                      -->
 				<tree string="Reservation" 
-                      colors="red:date_limit&lt;=current_date;"
                 >
-					<field name="rq_no" colspan="1"/>
+					<field name="reference" colspan="1"/>
 					<field name="departure_id" select="1"/>
-                    <field name="date_order" />
-                    <field name="date_limit"  />
                     <field name="state"  />
 				</tree>
 			</field>

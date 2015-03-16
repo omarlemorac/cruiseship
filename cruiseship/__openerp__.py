@@ -42,6 +42,8 @@ ship cruises
     ],
     'data': [
         'view/cruiseship_view.xml',
+        'security/res_groups.xml',
+        'security/ir.model.access.csv',
     ],
     'js': [
     ],

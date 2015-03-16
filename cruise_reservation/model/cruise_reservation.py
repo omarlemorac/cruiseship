@@ -120,6 +120,7 @@ class requisition(osv.Model):
 
     _name = 'cruise.rq'
     _rec_name = 'rq_no'
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
 
     def _availability(self, cr, uid, ids, field_name, arg, context=None):
         req_obj = self.browse(cr, uid, ids)
@@ -181,10 +182,11 @@ class requisition(osv.Model):
         'rq_no': fields.char('Reservation No'
             , size=64, required=True
             , readonly=True, states={'draft':[('readonly', False)]}),
-        'reference':fields.char('Reference', 255, help='Passenger reference'),
+        'reference':fields.char('Reference', 255, help='Passenger reference', required=True),
         'order_contact_id':fields.many2one('res.partner'
             , string='Ordering contact', help='Ordering contact'
             , required=True, readonly=True, states={'draft':[('readonly', False)]}),
+        'user_id': fields.many2one('res.users', 'Salesperson', select=True,required=True ),
         'lead_id':fields.many2one('crm.lead', 'Lead'
            , help='Choose the lead for this requisition.'),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
@@ -227,6 +229,9 @@ class requisition(osv.Model):
         'date_order':fields.date('Date order',required=True, help='Date order',
             readonly=True),
         'date_limit':fields.date('Date limit',required=True, help='Date limit'),
+        'date_request':fields.date('Date request',required=True, help='Date request'),
+        'date_payment':fields.date('Date payment',required=True, help='Date payment'),
+        'date_paid':fields.date('Date paid',required=True, help='Date paid'),
         'cruise_reservation_line_ids':fields.one2many('cruise.reservation.line'
             , 'rq_id', 'Reservation lines'
             , help='Reservation lines', readonly=True
@@ -280,6 +285,9 @@ class requisition(osv.Model):
         'state': lambda *a: 'draft',
         'date_order': fields.date.context_today,
         'date_limit': fields.date.context_today,
+        'date_request': fields.date.context_today,
+        'date_payment': fields.date.context_today,
+        'date_paid': fields.date.context_today,
             }
 
     def onchange_departure(self, cr, uid, ids, departure_id, context=None):
@@ -363,6 +371,7 @@ class requisition(osv.Model):
         """
         male sharing only allows adults
         female sharing only allows adults
+        sum of adults, children can't be added not share
 
                                 if cabin in [r[1] for r in reserved_cabins['no_sharing']]:
                                     msg = "%s are already reserved cabins without sharing"\
@@ -450,6 +459,9 @@ class reservation_line(osv.Model):
             ,required=True),
         'children':fields.integer('Children',required=True, help='Number of children'),
         'young':fields.integer('Young',required=True, help='Number of young'),
+        'cabin_id':fields.many2one('cruise.cabin', 'Cabin'
+            , help='Choose cabin por passenger/s'
+            , domain="[('ship_id', '=', line_departure_ship_id)]"),
         'cabin_ids':fields.many2many('cruise.cabin', 'reservation_cabin_rel',
             'rq_line_id', 'cabin_id', 'Cabins', help='Cabins reserved',
             domain="[('ship_id', '=', line_departure_ship_id)]"),
@@ -461,6 +473,21 @@ class reservation_line(osv.Model):
             help='Select the sharing type for cabin/s'),
 
         }
+
+    def onchange_pax(self, cr, uid, ids, ship_id, dummy, context=None):
+        pdb.set_trace()
+        if context is None:
+            context = {}
+        print dummy
+        print ship_id
+        return
+
+    def onchange_cabin(self, cr, uid, ids, cabin_id, context=None):
+        pdb.set_trace()
+        res = {}
+        print cabin_id
+        return res
+
 
 class cruise_cabin(osv.Model):
 
