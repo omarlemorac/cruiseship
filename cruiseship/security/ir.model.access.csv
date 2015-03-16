@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cruise_ship,access_cruise_ship,model_cruise_ship,cruiseship_group_user,1,1,1,1
+access_cruise_cabin_type,access_cruise_cabin_type,model_cruise_cabin_type,cruiseship_group_user,1,1,1,1
+access_cruise_cabin,access_cruise_cabin,model_cruise_cabin,cruiseship_group_user,1,1,1,1
+access_cabin_pax_line,access_cabin_pax_line,model_cabin_pax_line,cruiseship_group_user,1,1,1,1
+access_departure_cabin_line,access_departure_cabin_line,model_departure_cabin_line,cruiseship_group_user,1,1,1,1
+access_departure_ship_line,access_departure_ship_line,model_departure_ship_line,cruiseship_group_user,1,1,1,1
+access_cruise_departure,access_cruise_departure,model_cruise_departure,cruiseship_group_user,1,1,1,1
