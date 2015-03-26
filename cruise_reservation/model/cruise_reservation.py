@@ -304,11 +304,6 @@ class requisition(osv.Model):
         return {'value':res}
 
 
-    def cabin_sharing(pass1, pass2, cabins):
-        if context is None:
-            context = {}
-
-        return
 
     def _read_capacity(self, cr, uid, ids,context=None):
         """Return capacity of cabins _in departure"""
@@ -407,20 +402,64 @@ class requisition(osv.Model):
 
         return False
 
+    def _check_cabin_availability(self, values):
+        """check cabin availability for current requisition"""
+        values['cabins'].sort()
+        cabin_l = [c['cabin_id'] for c in values['cabins']]
+        duplicates = []
+        for c in cabin_l:
+            if cabin_l.count(c) > 1:
+                duplicates.append(c)
+        print set(duplicates)
+
+
+    def _read_cabin_availability(self, cr, uid, ids, values, context=None):
+        if context is None:
+            context = {}
+
+        res = {}
+
+        res['myid']= ids[0]
+        request_obj = self.browse(cr, uid, ids, context=context)
+        departures = {}
+        cabins = []
+
+        for request in request_obj:
+            reservation_ids = self.pool.get('cruise.rq').search(cr, uid,
+                    ['&', ('departure_id', '=',request.departure_id.id),
+                        ('state', '!=', 'draft')])
+            reservation_obj = self.browse(cr, uid, reservation_ids)
+            for reservation in reservation_obj:
+                for res_line in reservation.cruise_reservation_line_ids:
+                    cabins.append({'cabin_id':res_line.cabin_id.id,
+                            'adults':res_line.adults,
+                            'sharing':res_line.sharing,
+                            'rq_id':reservation.id})
+        res['cabins'] = cabins
+
+        return res
+
+
     def action_request(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
 
         self_reservation = self._check_self_reservation(cr, uid, context['active'] )
-        print self_reservation
 
         for req in self.browse(cr, uid, ids, context=context):
             if req.total_spaces < 1:
                 raise osv.except_osv('Warning', 'You must have at least one passenger')
 
             for line in req.cruise_reservation_line_ids:
-                if not line.cabin_ids:
-                    raise osv.except_osv('Warning', 'Cabins must be setted')
+                if not line.cabin_id:
+                    raise osv.except_osv('Warning', 'Cabin must be setted')
+                values = {'cabin_id':line.cabin_id}
+                cabin_values = self._read_cabin_availability(cr, uid, ids,values )
+                availability = self._check_cabin_availability(cabin_values)
+
+
+
+
 
         return self._search_departure_cabins(cr, uid, ids)\
                 and self.write(cr, uid, ids, {'state':'draft'})\
