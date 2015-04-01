@@ -303,6 +303,15 @@ class requisition(osv.Model):
             res['young_price_unit'] = departure_obj.young_price_normal
         return {'value':res}
 
+    def _find_duplicated(self, values):
+        """docstring for _find_duplicated_cabin"""
+        values['cabins'].sort()
+        cabin_l = [c['cabin_id'] for c in values['cabins']]
+        duplicates = []
+        for c in cabin_l:
+            if cabin_l.count(c) > 1:
+                duplicates.append(c)
+        return set(duplicates)
 
 
     def _read_capacity(self, cr, uid, ids,context=None):
@@ -382,6 +391,7 @@ class requisition(osv.Model):
         print "\n====================capacity==================="
         print capacity
         print self._cabin_dict(cr,uid, ids)
+#[FIXME] Delete or update method reserved_cabins
         reserved_cabins = self._read_reservations(cr, uid, ids)
 
         print reserved_cabins
@@ -399,18 +409,29 @@ class requisition(osv.Model):
                 raise osv.except_osv('Warning'
                 , 'Maximum children capacity reached')
         '''
+        self_reservation = self._check_self_reservation(cr, uid, context['active'] )
 
-        return False
+        can_share_flg = False
+        for req in self.browse(cr, uid, ids, context=context):
+            if req.total_spaces < 1:
+                raise osv.except_osv('Warning', 'You must have at least one passenger')
+
+            for line in req.cruise_reservation_line_ids:
+                if not line.cabin_id:
+                    raise osv.except_osv('Warning', 'Cabin must be setted')
+                values = {'cabin_id':line.cabin_id}
+                cabin_values = self._read_cabin_availability(cr, uid, ids,values )
+                duplicated = self._find_duplicated(cabin_values)
+                sharing = self._cabin_sharing(cabin_values, duplicated)
+                can_share = self._cabin_same_sharing(sharing)
+                if can_share[line.cabin_id]:
+                    can_share_flg = True
+
+        return can_share_flg
 
     def _check_cabin_availability(self, values):
         """check cabin availability for current requisition"""
-        values['cabins'].sort()
-        cabin_l = [c['cabin_id'] for c in values['cabins']]
-        duplicates = []
-        for c in cabin_l:
-            if cabin_l.count(c) > 1:
-                duplicates.append(c)
-        print set(duplicates)
+        duplicated = self._find_duplicated(values)
 
 
     def _read_cabin_availability(self, cr, uid, ids, values, context=None):
@@ -439,26 +460,47 @@ class requisition(osv.Model):
 
         return res
 
+    def _cabin_sharing(self, cabins, duplicated):
+        """docstring for _cabin_same_sharing"""
+        res = {'myid':cabins['myid']}
+        for d in duplicated:
+            res.setdefault(d, [])
+            for c in cabins['cabins']:
+                if c['cabin_id'] == d:
+                    res[d].append({'rq_id':c['rq_id'], 'sharing':c['sharing']})
+
+        return res
+
+    def _cabin_same_sharing(self, sharing):
+        res = {}
+        myid = sharing.pop('myid', None)
+        mysh = {}
+        for cabin_id, sh in sharing.items():
+            for s in sh:
+                if s['rq_id'] == myid:
+                    mysh.setdefault(cabin_id, [])
+                    _id = sh.index(s)
+                    mysh[cabin_id].append(sh.pop(_id))
+
+        for cabin_id, sh in sharing.items():
+            res.setdefault(cabin_id, False)
+            lsh = mysh[cabin_id]
+            for sl in lsh:
+                if s['sharing'] == 'no_sharing':
+                    res.setdefault(cabin_id, False)
+                    continue
+                for s in sh:
+                    if s['sharing'] != s['sharing']:
+                        res[cabin_id] = False
+                    else:
+#                        [FIXME] Check capacity
+                        res[cabin_id] = True
+
+        return res
 
     def action_request(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
-
-        self_reservation = self._check_self_reservation(cr, uid, context['active'] )
-
-        for req in self.browse(cr, uid, ids, context=context):
-            if req.total_spaces < 1:
-                raise osv.except_osv('Warning', 'You must have at least one passenger')
-
-            for line in req.cruise_reservation_line_ids:
-                if not line.cabin_id:
-                    raise osv.except_osv('Warning', 'Cabin must be setted')
-                values = {'cabin_id':line.cabin_id}
-                cabin_values = self._read_cabin_availability(cr, uid, ids,values )
-                availability = self._check_cabin_availability(cabin_values)
-
-
-
 
 
         return self._search_departure_cabins(cr, uid, ids)\
