@@ -368,10 +368,26 @@ class requisition(osv.Model):
         """Compare availability _with reserved_cabins."""
 
         res_obj = self.browse(cr, uid, active_id)
+        cabins = []
+        totals = {}
+
         """basic validation. Maximum capacity"""
         for line in res_obj.cruise_reservation_line_ids:
             if not line.cabin_id:
                 raise osv.except_osv('Warning', 'Cabin must be setted')
+            totals.setdefault(line.cabin_id.id,{'adults':0, 'children':0,
+                    'max_adult':0, 'max_child':0})
+
+            totals[line.cabin_id.id]['adults']\
+            =totals[line.cabin_id.id]['adults'] + line.adults + line.young
+            totals[line.cabin_id.id]['children']\
+            =totals[line.cabin_id.id]['children'] + line.children + line.children
+            totals[line.cabin_id.id]['max_adult'] = line.cabin_id.max_adult
+            totals[line.cabin_id.id]['max_child'] = line.cabin_id.max_child
+            cabins.append({'cabin_id':line.cabin_id.id,
+                'sharing':line.sharing,'max_adult':line.cabin_id.max_adult,
+                     'max_child':line.cabin_id.max_child, 'adults':line.adults,
+                     'children':line.children})
             if line.adults + line.young > line.cabin_id.max_adult:
                 raise osv.except_osv('Warning'
                 , 'Maximum adult capacity reached')
@@ -381,6 +397,10 @@ class requisition(osv.Model):
             if line.adults + line.young + line.children <= 0:
                 raise osv.except_osv('Warning',
                         'Must set number of passengers in all lines')
+        for tk, tv in totals.items():
+            if tv['adults'] > tv['max_adult']:
+                raise osv.except_osv('Warning',
+                        'Maximum capacity of cabin with id {} reached'.format(tk))
         return True
 
     def _search_departure_cabins(self, cr, uid, ids, context=None):
@@ -388,11 +408,6 @@ class requisition(osv.Model):
         male sharing only allows adults
         female sharing only allows adults
         sum of adults, children can't be added not share
-
-                                if cabin in [r[1] for r in reserved_cabins['no_sharing']]:
-                                    msg = "%s are already reserved cabins without sharing"\
-                                          % ", ".join(["%s %s" % (n[0].rq_no, n[1].name) for n in
-                                                reserved_cabins['no_sharing']])
         """
         if context is None:
             context = {}
@@ -400,8 +415,7 @@ class requisition(osv.Model):
         if not self._check_self_reservation(cr,uid,ids[0]):
             return False
 
-        print 'passed'
-        return
+        return True
 
         msg = ""
 
