@@ -334,7 +334,7 @@ class requisition(osv.Model):
         return res
 
     def _read_reservations(self, cr, uid, ids, context=None):
-        """docstring for _read_reservations"""
+        """Read reservations for departure"""
         if context is None:
             context = {}
         reservations = []
@@ -368,8 +368,20 @@ class requisition(osv.Model):
         """Compare availability _with reserved_cabins."""
 
         res_obj = self.browse(cr, uid, active_id)
-        print res_obj.rq_no
-        return False
+        """basic validation. Maximum capacity"""
+        for line in res_obj.cruise_reservation_line_ids:
+            if not line.cabin_id:
+                raise osv.except_osv('Warning', 'Cabin must be setted')
+            if line.adults + line.young > line.cabin_id.max_adult:
+                raise osv.except_osv('Warning'
+                , 'Maximum adult capacity reached')
+            if line.children > line.cabin_id.max_child:
+                raise osv.except_osv('Warning'
+                , 'Maximum children capacity reached')
+            if line.adults + line.young + line.children <= 0:
+                raise osv.except_osv('Warning',
+                        'Must set number of passengers in all lines')
+        return True
 
     def _search_departure_cabins(self, cr, uid, ids, context=None):
         """
@@ -385,31 +397,24 @@ class requisition(osv.Model):
         if context is None:
             context = {}
 
+        if not self._check_self_reservation(cr,uid,ids[0]):
+            return False
+
+        print 'passed'
+        return
+
         msg = ""
 
         capacity = self._read_capacity(cr, uid, ids)
         print "\n====================capacity==================="
+        print ids[0]
         print capacity
         print self._cabin_dict(cr,uid, ids)
 #[FIXME] Delete or update method reserved_cabins
         reserved_cabins = self._read_reservations(cr, uid, ids)
 
         print reserved_cabins
-        print "stop"
 
-        """basic validation. Maximum capacity"""
-        '''
-        for line in req.cruise_reservation_line_ids:
-            av_adults = 0
-            av_children = 0
-            if line.adults + line.young > capacity[cabin.id][0]:
-                raise osv.except_osv('Warning'
-                , 'Maximum adult capacity reached')
-            if line.children > capacity[cabin.id][1]:
-                raise osv.except_osv('Warning'
-                , 'Maximum children capacity reached')
-        '''
-        self_reservation = self._check_self_reservation(cr, uid, context['active'] )
 
         can_share_flg = False
         for req in self.browse(cr, uid, ids, context=context):
@@ -417,15 +422,13 @@ class requisition(osv.Model):
                 raise osv.except_osv('Warning', 'You must have at least one passenger')
 
             for line in req.cruise_reservation_line_ids:
-                if not line.cabin_id:
-                    raise osv.except_osv('Warning', 'Cabin must be setted')
                 values = {'cabin_id':line.cabin_id}
                 cabin_values = self._read_cabin_availability(cr, uid, ids,values )
                 duplicated = self._find_duplicated(cabin_values)
                 sharing = self._cabin_sharing(cabin_values, duplicated)
                 can_share = self._cabin_same_sharing(sharing)
-                if can_share[line.cabin_id]:
-                    can_share_flg = True
+#                if can_share[line.cabin_id]:
+#                    can_share_flg = True
 
         return can_share_flg
 
