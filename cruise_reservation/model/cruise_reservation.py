@@ -442,46 +442,57 @@ class requisition(osv.Model):
         """check cabin availability for current requisition"""
         duplicated = self._find_duplicated(values)
 
-    def _cabins_in_departure(self, cr, uid, ids, context=None):
+    def _cabins_in_departure(self, cr, uid, _id, context=None):
         """Recover all cabins in departure"""
-        request_obj = self.browse(cr, uid, ids, context=context)
+        request_obj = self.browse(cr, uid, _id, context=context)
         res = {}
-        for request in request_obj:
-            cabin_dct = {}
-            for cabin in request.departure_id.ship_id.cabin_ids:
-                cabin_dct[cabin.id] =\
-                {'max_adult':cabin.max_adult,'max_child':cabin.max_child,
-                 'name':cabin.name}
-            res[request.id] = cabin_dct
+        for cabin in request_obj.departure_id.ship_id.cabin_ids:
+            res[cabin.id] =\
+            {'max_adult':cabin.max_adult,'max_child':cabin.max_child,
+             'name':cabin.name}
         return res
 
-
-
-
-    def _read_cabin_availability(self, cr, uid, ids, values, context=None):
+    def _read_cabin_availability(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
 
         res = {}
+        _all_cabins = self._cabins_in_departure(cr, uid, ids[0], context)
 
-        res['myid']= ids[0]
         request_obj = self.browse(cr, uid, ids, context=context)
         departures = {}
-        cabins = []
+        _cabins = {}
 
         for request in request_obj:
             reservation_ids = self.pool.get('cruise.rq').search(cr, uid,
                     ['&', ('departure_id', '=',request.departure_id.id),
-                        ('state', '!=', 'draft')])
+                     '&', ('id', '!=', request.id),
+                          ('state', 'not in', ['draft', 'wlist', 'cancel'])])
             reservation_obj = self.browse(cr, uid, reservation_ids)
             for reservation in reservation_obj:
                 for res_line in reservation.cruise_reservation_line_ids:
-                    cabins.append({'cabin_id':res_line.cabin_id.id,
+                    _cabins[res_line.cabin_id.id] = {
                             'adults':res_line.adults,
                             'sharing':res_line.sharing,
-                            'rq_id':reservation.id})
-        res['cabins'] = cabins
+                            'rq_id':reservation.id}
 
+        print _all_cabins
+        print "substract"
+        print _cabins
+        sharing_opt = ['no_sharing', 'male_sharing', 'female_sharing']
+        sharing_dct = {}
+        for s in sharing_opt:
+            sharing_dct[s] = [ck for ck, cv in _cabins.items() if cv['sharing']
+                    == s]
+
+        print sharing_dct
+        '''
+        Remove elements from _all_cabins
+        '''
+        for k in sharing_dct['no_sharing']:
+            _all_cabins.remove(k)
+
+        print _all_cabins
         return res
 
     def _cabin_sharing(self, cabins, duplicated):
@@ -525,8 +536,7 @@ class requisition(osv.Model):
     def action_request(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
-
-        self._cabins_in_departure(cr,uid,ids,context)
+        self._read_cabin_availability(cr, uid, ids )
         return self._search_departure_cabins(cr, uid, ids)\
                 and self.write(cr, uid, ids, {'state':'request'})\
                 or self.write(cr, uid, ids, {'state':'wlist'})
