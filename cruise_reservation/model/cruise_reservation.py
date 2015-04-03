@@ -323,15 +323,6 @@ class requisition(osv.Model):
             for cabin in req.departure_id.ship_id.cabin_ids:
                 res[cabin.id] = (cabin.max_adult, cabin.max_child)
         return res
-    def _cabin_dict(self, cr, uid, ids,context=None):
-        """Return capacity of cabins _in departure"""
-        if context is None:
-            context = {}
-        res = {}
-        for req in self.browse(cr, uid, ids, context=context):
-            for cabin in req.departure_id.ship_id.cabin_ids:
-                res[cabin.id] = []
-        return res
 
     def _read_reservations(self, cr, uid, ids, context=None):
         """Read reservations for departure"""
@@ -412,10 +403,12 @@ class requisition(osv.Model):
         if context is None:
             context = {}
 
-        if not self._check_self_reservation(cr,uid,ids[0]):
-            return False
+        self_reservation = False
 
-        return True
+        if self._check_self_reservation(cr,uid,ids[0]):
+            self_reservation = True
+
+        return self_reservation
 
         msg = ""
 
@@ -423,7 +416,6 @@ class requisition(osv.Model):
         print "\n====================capacity==================="
         print ids[0]
         print capacity
-        print self._cabin_dict(cr,uid, ids)
 #[FIXME] Delete or update method reserved_cabins
         reserved_cabins = self._read_reservations(cr, uid, ids)
 
@@ -449,6 +441,21 @@ class requisition(osv.Model):
     def _check_cabin_availability(self, values):
         """check cabin availability for current requisition"""
         duplicated = self._find_duplicated(values)
+
+    def _cabins_in_departure(self, cr, uid, ids, context=None):
+        """Recover all cabins in departure"""
+        request_obj = self.browse(cr, uid, ids, context=context)
+        res = {}
+        for request in request_obj:
+            cabin_dct = {}
+            for cabin in request.departure_id.ship_id.cabin_ids:
+                cabin_dct[cabin.id] =\
+                {'max_adult':cabin.max_adult,'max_child':cabin.max_child,
+                 'name':cabin.name}
+            res[request.id] = cabin_dct
+        return res
+
+
 
 
     def _read_cabin_availability(self, cr, uid, ids, values, context=None):
@@ -519,9 +526,9 @@ class requisition(osv.Model):
         if context is None:
             context = {}
 
-
+        self._cabins_in_departure(cr,uid,ids,context)
         return self._search_departure_cabins(cr, uid, ids)\
-                and self.write(cr, uid, ids, {'state':'draft'})\
+                and self.write(cr, uid, ids, {'state':'request'})\
                 or self.write(cr, uid, ids, {'state':'wlist'})
 
         #return self.write(cr, uid, ids, {'state':'request'})

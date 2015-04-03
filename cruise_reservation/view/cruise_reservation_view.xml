@@ -108,6 +108,15 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="Dates">
+                                <group>
+                                    <field name="date_request" />
+                                    <field name="date_payment" />
+                                    <field name="date_paid" />
+                                </group>
+                            </page>
+                            <!-- <notebook> -->
+
                             <page string="Payments"  >
                                 <field name="account_voucher_ids" 
                                     nolabel="1"

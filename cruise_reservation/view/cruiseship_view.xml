@@ -11,6 +11,7 @@
                   <field name="availability" />
                   <field name="availability_perc" widget="progressbar" />
               </xpath>
+        <!--
               <notebook position="inside">
                   <page string="Requisition">
                       <field name="requisition_ids" nolabel="1" >
@@ -29,6 +30,7 @@
                       </field>
                   </page>
               </notebook>
+        -->
           </field>
         </record>
         <record model="ir.ui.view" id="departure_requisition_tree_view">
