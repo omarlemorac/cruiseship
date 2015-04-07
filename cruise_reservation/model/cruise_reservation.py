@@ -41,7 +41,7 @@ class departure(osv.Model):
             dep_total_spaces = 0
             val = {}
             reqs = [req for req in dep.requisition_ids if req.state in
-                    ('confirm','request', 'payment')]
+                    ('confirm','request')]
             for req in reqs:
                 dep_total_spaces += req.total_spaces
             val['availability_perc'] = ((float(dep.max_capacity) - float(dep_total_spaces)) / \
@@ -246,10 +246,7 @@ class requisition(osv.Model):
               ,('wlist','Waiting list')
               ,('request','Request')
               ,('confirm','Confirm')
-              ,('payment','Payment')
-              ,('paid','Paid')
               ,('cancel','Cancel')
-              ,('done','Done')
               ]
             , 'State',readonly=True),
 
@@ -335,8 +332,7 @@ class requisition(osv.Model):
             req_d = []
             req_d.append(req.rq_no)
             reservation_ids = self.search(cr, uid
-                    , [('state', 'in', ('request', 'confirm', 'payment', 'paid',
-                        'done')),
+                    , [('state', 'in', ('request', 'confirm',)),
                        ('departure_id.id', '=',req.departure_id.id), #la misma salida
                        ('id', '!=', ids[0]),
                         ], context=context)
@@ -462,6 +458,7 @@ class requisition(osv.Model):
         request_obj = self.browse(cr, uid, ids, context=context)
         departures = {}
         _cabins = {}
+        _self_cabins = {}
 
         for request in request_obj:
             reservation_ids = self.pool.get('cruise.rq').search(cr, uid,
@@ -471,28 +468,47 @@ class requisition(osv.Model):
             reservation_obj = self.browse(cr, uid, reservation_ids)
             for reservation in reservation_obj:
                 for res_line in reservation.cruise_reservation_line_ids:
-                    _cabins[res_line.cabin_id.id] = {
+                    _cabins.setdefault(res_line.cabin_id.id, {})
+                    _cabins[res_line.cabin_id.id][reservation.id] = {
+                            'adults':res_line.adults,
+                            'sharing':res_line.sharing,
+                            'rq_id':reservation.id,
+                            'ref':reservation.reference}
+
+        for request in request_obj:
+            reservation_ids = self.pool.get('cruise.rq').search(cr, uid,
+                    ['&', ('departure_id', '=',request.departure_id.id),
+                     '&', ('id', '=', request.id),
+                          ('state', 'in', ['draft', 'wlist'])])
+            reservation_obj = self.browse(cr, uid, reservation_ids)
+            for reservation in reservation_obj:
+                for res_line in reservation.cruise_reservation_line_ids:
+                    _self_cabins[res_line.cabin_id.id] = {
                             'adults':res_line.adults,
                             'sharing':res_line.sharing,
                             'rq_id':reservation.id}
 
-        print _all_cabins
-        print "substract"
-        print _cabins
-        sharing_opt = ['no_sharing', 'male_sharing', 'female_sharing']
-        sharing_dct = {}
-        for s in sharing_opt:
-            sharing_dct[s] = [ck for ck, cv in _cabins.items() if cv['sharing']
-                    == s]
+        skl = [k for k in _self_cabins.keys()]
+        ckl = [k for k in _cabins.keys()]
+        shared_cabins = {}
+        if [v for v in skl if v in ckl]: #Only checks for duplicated cabins
+            for sk, sv in _self_cabins.items():
+                for ck, cv in _cabins[sk].items():
+                    if cv['sharing'] == 'no_sharing':
+                        raise osv.except_osv('Warning', 'Already reserved cabin')
+                    if cv['sharing'] != sv['sharing']:
+                        raise osv.except_osv('Warning'
+                                , 'Cabin with {} sharing'.format(cv['sharing']))
 
-        print sharing_dct
-        '''
-        Remove elements from _all_cabins
-        '''
-        for k in sharing_dct['no_sharing']:
-            _all_cabins.remove(k)
+                    if cv['sharing'] == sv['sharing']:
+                        shared_cabins.setdefault(sk,sv['adults'])
+                        shared_cabins[sk] += cv['adults']
 
-        print _all_cabins
+
+        for sk, sv in shared_cabins.items():
+            if _all_cabins[sk] > sv['max_adult']:
+                raise osv.except_osv('Warning'
+                        , 'Maximum sharing capacity reached')
         return res
 
     def _cabin_sharing(self, cabins, duplicated):
@@ -541,7 +557,10 @@ class requisition(osv.Model):
                 and self.write(cr, uid, ids, {'state':'request'})\
                 or self.write(cr, uid, ids, {'state':'wlist'})
 
-        #return self.write(cr, uid, ids, {'state':'request'})
+    def action_confirm(self, cr, uid, ids, values, context=None):
+        if context is None:
+            context = {}
+        return self.write(cr, uid, ids, {'state':'confirm'})
 
     def action_cancel(self, cr, uid, ids, context=None):
         if context is None:
