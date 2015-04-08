@@ -506,7 +506,7 @@ class requisition(osv.Model):
 
 
         for sk, sv in shared_cabins.items():
-            if _all_cabins[sk] > sv['max_adult']:
+            if _all_cabins[sk]['max_adult'] > sv:
                 raise osv.except_osv('Warning'
                         , 'Maximum sharing capacity reached')
         return res
