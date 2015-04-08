@@ -168,26 +168,12 @@
 				</tree>
 			</field>
 		</record>
-        <record id="cruise_departure_availability_search_form_view" model="ir.ui.view">
-            <field name="name">cruise.depavailability.search.form</field>
-            <field name="model">cruise.departureavailabilityvw</field>
-            <field name="arch" type="xml">
-                <search string="Search departure">
-                    <group expand="0" string="Group by ..">
-                        <filter string="Departure" domain="[]" context="{'group_by':'departure'}" />
-                    </group>
-                </search>
-            </field>
-		</record>
 		<record model="ir.ui.view" id="view_departure_availability_tree">
 			<field name="name">cruise.depatureavailability.tree</field>
 			<field name="model">cruise.departureavailabilityvw</field>
             <field name="arch" type="xml">
-                <!-- 
-                      colors="blue:date_limit&lt;=current_date;"
-                      -->
-				<tree string="Reservation" 
-                >
+                <tree string="Reservation"> 
+                
 					<field name="departure" select="1" colspan="1"/>
 					<field name="ship" select="1"/>
                     <field name="departure_date"  />
@@ -221,6 +207,17 @@
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="cruise_reservation_search_form_view"/>
+		</record>
+        <record id="cruise_departure_availability_search_form_view" model="ir.ui.view">
+            <field name="name">cruise.depavailability.search.form</field>
+            <field name="model">cruise.departureavailabilityvw</field>
+            <field name="arch" type="xml">
+                <search string="Search departure">
+                    <group expand="0" string="Group by ..">
+                        <filter string="Departure" domain="[]" context="{'group_by':'departure'}" />
+                    </group>
+                </search>
+            </field>
 		</record>
 		<record model="ir.actions.act_window" id="open_cruise_departure_availability_tree">
 			<field name="name">Departure Availability</field>
