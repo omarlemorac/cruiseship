@@ -30,15 +30,13 @@ Cruise Ship Operation and Management
 This module aims to manage reservations and servces in ordering sales of
 ship cruises
     * Cabin configuration
+    * Ship configuration
     * Ship departures
-    * Availability queries
-    * Service voucher
-    * Manage of payments
     """,
     'website': 'http://www.accioma.com',
     'images' : [],
     'depends' : [
-        "sale"
+        "product"
     ],
     'data': [
         'view/cruiseship_view.xml',

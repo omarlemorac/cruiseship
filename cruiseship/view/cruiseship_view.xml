@@ -84,8 +84,12 @@
             <field name="model">cruise.departure</field>
             <field name="arch" type="xml">
                 <tree string="Departure">
-                    <field name="standar_name"/>
+                    <field name="name"/>
                     <field name="departure_date" />
+                    <field name="arrival_date"/>
+                    <field name="adult_price_normal"/>
+                    <field name="itinerary"/>
+                    <field name="fast_note"/>
                 </tree>
             </field>
         </record>
@@ -104,9 +108,10 @@
                             </h1>
                         </div>
                         <group>
-                            <field name="departure_date" on_change="onchange_ship(ship_id, departure_date)"/>
-                            <field name="arrival_date" />
-                            <field name="ship_id" on_change="onchange_ship(ship_id, departure_date)" />
+                            <field name="departure_date" on_change="onchange_ship(ship_id, departure_date, arrival_date)"/>
+                            <field name="arrival_date" on_change="onchange_ship(ship_id, departure_date, arrival_date)" />
+                            <field name="ship_id" on_change="onchange_ship(ship_id, departure_date, arrival_date)" />
+                            <field name="fast_note"/>
                             <field name="max_capacity" />
                             <field name="itinerary" />
                         </group>

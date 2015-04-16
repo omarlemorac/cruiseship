@@ -26,6 +26,7 @@ import datetime
 class cruise_ship(osv.Model):
     _name = "cruise.ship"
     _description = "Ship"
+    _inherit = ['mail.thread']
     _columns = {
         'name': fields.char('Ship Name', size=64, required=True, select=True),
         'sequence' : fields.integer('Sequence', size=64),
@@ -41,18 +42,22 @@ class cruise_ship(osv.Model):
         'check_max_capacity':False,
             }
 
+class product_category(osv.osv):
+    _inherit = "product.category"
+    _columns = {
+        'iscabintype':fields.boolean('Is Cabin Type'),
+    }
 class product_product(osv.osv):
     _inherit = "product.product"
     _columns = {
-        'isroom':fields.boolean('Is Room'),
-        'iscategid':fields.boolean('Is categ id'),
-        'isservice':fields.boolean('Is Service id'),
+        'iscabin':fields.boolean('Is Cabin'),
     }
 
 class cabin_type(osv.Model):
     _name='cruise.cabin.type'
+    _inherits = {'product.category':'cat_id'}
     _columns = {
-        'name':fields.char('Name', 255, help='Name of cabin type'),
+        'cat_id':fields.many2one('product.category', 'category', required=True, select=True, ondelete='cascade'),
             }
 
 
@@ -124,20 +129,9 @@ class departure_ship_line(osv.Model):
 class departure(osv.Model):
     _name = 'cruise.departure'
     _description = 'Cruise Departure'
-    def _standar_name(self, cr, uid, ids, field_name, args, context=None):
-        if context is None:
-            context = {}
-        res = {}
-        for dep in self.browse(cr, uid, ids):
-            res[dep.id] = "%s/%s" % (dep.ship_id.name, dep.departure_date)
-        return res
 
     _columns = {
         'name':fields.char('Name', 255, help='Name', required=True),
-        'standar_name':fields.function(_standar_name
-            , method=True, store=True, fnct_inv=None, fnct_search=None
-            , string='Standar name', help='Standarized ship and date name'),
-
         'departure_date':fields.date('Departure date', help='Departure date',
             required=True),
         'arrival_date':fields.date('Arrival date', help='Arrival date',
@@ -162,9 +156,9 @@ class departure(osv.Model):
         'child_price_normal':fields.float('Child price', required=True
             ,digits_compute=dp.get_precision('Product Price')
             ,help='fields help'),
-        'standar_name':fields.function(_standar_name, method=True, store=False,
-            fnct_inv=None, fnct_search=None, string='Name',
-            help='Standar name', type='string'),
+        'fast_note':fields.char('Note', 100,
+            help='A fast note to briefly inform users'),
+
             }
 
     _defaults = {
@@ -172,12 +166,18 @@ class departure(osv.Model):
         'arrival_date': fields.date.context_today,
             }
 
-    def onchange_ship(self, cr, uid, ids, ship_id, departure_date, context=None):
+    def onchange_ship(self, cr, uid, ids, ship_id, departure_date,
+            arrival_date, context=None):
         if context is None:
             context = {}
         res = {}
         if ship_id:
             ship_obj = self.pool.get('cruise.ship').browse(cr, uid, ship_id)
-            res['name'] = "%s/%s" %(ship_obj.name,departure_date)
+            dd = datetime.datetime.strptime(departure_date, '%Y-%m-%d')
+            ad = datetime.datetime.strptime(arrival_date, '%Y-%m-%d')
+
+            res['name'] = "{} {}/{}".format(
+                           ship_obj.name,dd.strftime('%Y-%b-%d'),
+                                         ad.strftime('%b-%d'))
         return {'value':res}
 

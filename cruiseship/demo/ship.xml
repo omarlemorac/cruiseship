@@ -19,11 +19,17 @@
         <!--====================================================
 						Cabin type
 		==================================================== -->
-        <record model="cruise.cabin.type" id="cruise_ship_ct_dbb_demo">
-            <field name="name" >Double bunk bed</field>
+        <record model="cruise.cabin.type" id="cruise_ship_ct_0">
+			<field name="parent_id"  ref="null" />
+            <field name="name" >All cabins</field>
         </record>
-        <record model="cruise.cabin.type" id="cruise_ship_ct_mat_demo">
+        <record model="cruise.cabin.type" id="cruise_ship_ct_1">
+            <field name="name" >Double bunk bed</field>
+			<field name="parent_id" model="product.category" search="[('iscabintype','=',True)]" ref="cruise_ship_ct_0"/>
+        </record>
+        <record model="cruise.cabin.type" id="cruise_ship_ct_2">
             <field name="name" >Matrimonial</field>
+			<field name="parent_id" model="product.category" search="[('iscabintype','=',True)]" ref="cruise_ship_ct_0"/>
         </record>
         <!--====================================================
 						Cabin
@@ -33,49 +39,49 @@
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
-            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
         <record model="cruise.cabin" id="cruise_ship_cabin_s2_demo">
             <field name="name" >Cabin 2</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
-            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
         <record model="cruise.cabin" id="cruise_ship_cabin_s3_demo">
             <field name="name" >Cabin 3</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
-            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
         <record model="cruise.cabin" id="cruise_ship_cabin_s4_demo">
             <field name="name" >Cabin 4</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
-            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
         <record model="cruise.cabin" id="cruise_ship_cabin_s5_demo">
             <field name="name" >Cabin 5</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
-            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
         <record model="cruise.cabin" id="cruise_ship_cabin_s6_demo">
             <field name="name" >Cabin 6</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
-            <field name="cabin_type_id" ref="cruise_ship_ct_dbb_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
         <record model="cruise.cabin" id="cruise_ship_cabin_s7_demo">
             <field name="name" >Cabin 7</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
-            <field name="cabin_type_id" ref="cruise_ship_ct_mat_demo" />
+            <field name="cabin_type_id" ref="cruise_ship_ct_2" />
         </record>
         <!--====================================================
 						Departures
