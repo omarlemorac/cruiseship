@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="category_cruiseship" model="ir.module.category">
+            <field name="name">Cruise Reservation</field>
+        </record>
+        <record id="cruiseship_group_user" model="res.groups">
+            <field name="category_id" ref="category_cruiseship"/>
+            <field name="name">Cruiseship User</field>
+        </record>
+    </data>
+</openerp>

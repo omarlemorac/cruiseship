@@ -14,17 +14,81 @@
               <notebook position="inside">
                   <page string="Requisition">
                       <field name="requisition_ids" nolabel="1" >
-                          <form>
-                              <field name="rq_no" />
-                              <field name="total_spaces" />
-                              <field name="date_order" />
-                              <field name="date_limit" />
+                          <form string="Requisition" version="7.0">
+                              <group>
+                                  <field name="rq_no" />
+                                  <field name="reference" />
+                                  <field name="total_spaces" />
+                                  <field name="date_order" />
+                                  <field name="date_limit" />
+                                  <field name="state" />
+                              </group>
+                                <notebook>
+                                    <page string="Prices">
+                                        <group>
+                                            <group>
+                                                <field name="adults"  />
+                                                <field name="children"  />
+                                                <field name="young"  />
+                                            </group>
+                                            <group>
+                                                <field name="adult_price_unit"  />
+                                                <field name="child_price_unit"  />
+                                                <field name="young_price_unit"  />
+                                                <field name="departure_ship_id"  />
+                                            </group>
+                                            <group>
+                                                <field name="adult_price_total"  />
+                                                <field name="children_price_total"  />
+                                                <field name="young_price_total"  />
+                                                <field name="amount_total"  />
+                                            </group>
+                                        </group>
+                                    </page>
+                                    <page string="Cabins">
+                                        <field name="cruise_reservation_line_ids" nolabel="1" >
+                                            <form string="Lines" version="7.0">
+                                                <group>
+                                                    <group>
+                                                        <field name="adults" on_change="onchange_pax(parent.ship_id, 'dummy')"   />
+                                                        <field name="children" />
+                                                        <field name="young" />
+                                                        <field name="sharing" />
+                                                        <field name="cabin_id" on_change="onchange_cabin(cabin_id)"/>
+                                                    </group>
+                                                    <group>
+                                                        <field name="line_departure_id" />
+                                                        <field name="line_departure_ship_id" />
+                                                        <field name="name" placeholder="ReferenceNameX#"/>
+                                                    </group>
+                                                </group>
+                                            </form>
+                                            <tree string="Lines" editable="bottom">
+                                                <field name="adults" />
+                                                <field name="children" />
+                                                <field name="young" />
+                                                <field name="cabin_id" />
+                                                <field name="sharing" />
+                                                <field name="line_departure_ship_id" />
+                                            </tree>
+                                        </field>
+                                    </page>
+                                    <page string="Dates">
+                                        <group>
+                                            <field name="date_request" />
+                                            <field name="date_payment" />
+                                            <field name="date_paid" />
+                                        </group>
+                                    </page>
+                                </notebook>
                           </form>
                           <tree>
                               <field name="rq_no" />
+                              <field name="reference" />
                               <field name="total_spaces" />
                               <field name="date_order" />
                               <field name="date_limit" />
+                              <field name="state" />
                           </tree>
                       </field>
                   </page>
@@ -37,9 +101,11 @@
           <field name="priority">25</field>
           <field name="inherit_id" ref="cruiseship.view_departure_list_view" />
           <field name="arch" type="xml">
-              <field name="departure_date" position="after" >
+              <field name="arrival_date" position="after" >
                   <field name="availability" />
                   <field name="availability_perc" widget="progressbar" />
+                  <field name="requested_count" />
+                  <field name="confirmed_count" />
               </field>
 
           </field>

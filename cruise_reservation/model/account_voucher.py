@@ -18,44 +18,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name' : 'Cruise Ship Operation',
-    'version' : '0.1',
-    'author' : 'Accioma',
-    'category' : '',
-    'description' : """
-======================================
-Cruise Ship Operation and Management
-======================================
-This module aims to manage reservations and servces in ordering sales of
-ship cruises
-    * Cabin configuration
-    * Ship configuration
-    * Ship departures
-    """,
-    'website': 'http://www.accioma.com',
-    'images' : [],
-    'depends' : [
-        "product"
-    ],
-    'data': [
-        'view/cruiseship_view.xml',
-        'security/res_groups.xml',
-        'security/ir.model.access.csv',
-    ],
-    'js': [
-    ],
-    'qweb' : [
-    ],
-    'css':[
-    ],
-    'demo': [
-        'demo/ship.xml',
-    ],
-    'test': [
-    ],
-    'installable': True,
-    'auto_install': False,
-}
+
+from osv import osv, fields
+
+class account_voucher(osv.Model):
+
+    '''Account voucher for cruise reservation'''
+
+    _name = 'account.voucher'
+    _inherit = 'account.voucher'
+
+    _columns = {
+            'cruise_reservation_id':fields.many2one('cruise.rq', 'Reservation'
+                , help='Reservation'),
+
+
+
+            }
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

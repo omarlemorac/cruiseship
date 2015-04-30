@@ -1,0 +1,524 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* cruise_reservation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-11 14:12+0000\n"
+"PO-Revision-Date: 2015-03-11 14:12+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cruise_reservation
+#: help:cruise.rq,availability:0
+#: help:cruise.rq,availability_perc:0
+msgid "Availability on departure"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.departure,child_unit_price:0
+msgid "Child unit price"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,lead_id:0
+msgid "Lead"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.departure,child_unit_price:0
+msgid "Child default adult unit price"
+msgstr ""
+
+#. module: cruise_reservation
+#: model:ir.model,name:cruise_reservation.model_cruise_reservation_line
+msgid "cruise.reservation.line"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.rq,state:0
+msgid "Waiting list"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,children_price_total:0
+msgid "Total children"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,account_voucher_ids:0
+msgid "Payments for this reservation"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,message_unread:0
+msgid "Unread Messages"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,user_id:0
+msgid "Salesperson"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,max_capacity:0
+#: help:cruise.rq,max_capacity:0
+msgid "Maximum capacity"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,date_order:0
+#: help:cruise.rq,date_order:0
+msgid "Date order"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,availability_perc:0
+msgid "Availability percentage in departure"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,message_ids:0
+msgid "Messages"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,young:0
+#: field:cruise.rq,young:0
+msgid "Young"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,date_payment:0
+#: help:cruise.rq,date_payment:0
+msgid "Date payment"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,date_request:0
+#: help:cruise.rq,date_request:0
+msgid "Date request"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,message_unread:0
+msgid "If checked new messages require your attention."
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,cabin_ids:0
+#: view:cruise.rq:0
+msgid "Cabins"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+#: field:cruise.rq,reference:0
+msgid "Reference"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,adult_price_total:0
+msgid "Total price adult"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.departure,young_unit_price:0
+msgid "Young default adult unit price"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.reservation.line,sharing:0
+msgid "Male sharing"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,message_summary:0
+msgid "Holds the Chatter summary (number of messages, ...). This summary is directly in html format in order to be inserted in kanban views."
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.departure,availability:0
+#: help:cruise.departure,availability:0
+#: field:cruise.departure,availability_perc:0
+#: help:cruise.departure,availability_perc:0
+#: field:cruise.rq,availability:0
+msgid "Availability"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+#: selection:cruise.rq,state:0
+msgid "Confirm"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.departure,young_unit_price:0
+msgid "Young unit price"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,state:0
+msgid "State"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,message_follower_ids:0
+msgid "Followers"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,sharing:0
+msgid "Select the sharing type for cabin/s"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+msgid "ReferenceNameX#"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,young:0
+#: help:cruise.rq,young:0
+msgid "Number of young"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.reservation.line,sharing:0
+msgid "No sharing"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+msgid "Prices"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,cabin_ids:0
+msgid "Cabins reserved"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:class.name,name:0
+#: help:cruise.rq,adult_price_unit:0
+#: help:cruise.rq,child_price_unit:0
+#: help:cruise.rq,young_price_unit:0
+msgid "fields help"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+msgid "Lines"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,young_price_unit:0
+msgid "Young price"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,line_departure_id:0
+#: view:cruise.rq:0
+#: field:cruise.rq,departure_id:0
+#: help:cruise.rq,departure_id:0
+msgid "Departure"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.departure,adult_unit_price:0
+msgid "Default adult unit price"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.departure:0
+#: view:cruise.rq:0
+msgid "Requisition"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,total_spaces:0
+msgid "Total spaces reserved"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+msgid "Group by .."
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,sharing:0
+msgid "Sharing type"
+msgstr ""
+
+#. module: cruise_reservation
+#: model:ir.model,name:cruise_reservation.model_cruise_cabin
+msgid "Ship cabin"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,reference:0
+msgid "Passenger reference"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.departure,requisition_ids:0
+#: help:cruise.departure,requisition_ids:0
+msgid "Requisitions"
+msgstr ""
+
+#. module: cruise_reservation
+#: model:ir.model,name:cruise_reservation.model_class_name
+msgid "class.name"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,departure_ship_id:0
+msgid "Helper field ship"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+msgid "Date limit today"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,children:0
+#: help:cruise.rq,children:0
+msgid "Number of children"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,line_departure_id:0
+#: help:cruise.reservation.line,line_departure_ship_id:0
+msgid "Helper field to filter cabins"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.cabin,res_ids:0
+msgid "Reservations made to cabin"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.rq,state:0
+msgid "Draft"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.reservation.line,sharing:0
+msgid "Female sharing"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,adults:0
+#: help:cruise.rq,adults:0
+msgid "Number of adults"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,rq_id:0
+msgid "Id for requisition"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,departure_ship_id:0
+msgid "unknown"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,adult_price_total:0
+msgid "Total adult"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.rq,state:0
+msgid "Paid"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,message_is_follower:0
+msgid "Is a Follower"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,adults:0
+msgid "Adult"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,rq_id:0
+msgid "Requisition Id"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,child_price_unit:0
+msgid "Child price"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,message_summary:0
+msgid "Summary"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.departure,adult_unit_price:0
+msgid "Adult unit price"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.reservation.line,name:0
+msgid "ReferenceX"
+msgstr ""
+
+#. module: cruise_reservation
+#: model:ir.model,name:cruise_reservation.model_account_voucher
+msgid "Accounting Voucher"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.rq,state:0
+msgid "Done"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+#: selection:cruise.rq,state:0
+msgid "Cancel"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,children:0
+#: field:cruise.rq,children:0
+msgid "Children"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,order_contact_id:0
+#: help:cruise.rq,order_contact_id:0
+msgid "Ordering contact"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,cruise_reservation_line_ids:0
+#: help:cruise.rq,cruise_reservation_line_ids:0
+msgid "Reservation lines"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,adult_price_unit:0
+msgid "Adult price"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,amount_total:0
+#: help:cruise.rq,amount_total:0
+msgid "Amount total"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,date_paid:0
+#: help:cruise.rq,date_paid:0
+msgid "Date paid"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,young_price_total:0
+msgid "Total young"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,rq_no:0
+msgid "Reservation No"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+#: field:cruise.rq,date_limit:0
+#: help:cruise.rq,date_limit:0
+msgid "Date limit"
+msgstr ""
+
+#. module: cruise_reservation
+#: model:ir.model,name:cruise_reservation.model_cruise_departure
+msgid "Cruise Departure"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,total_spaces:0
+msgid "Total spaces"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:account.voucher,cruise_reservation_id:0
+#: help:account.voucher,cruise_reservation_id:0
+#: view:cruise.rq:0
+#: model:ir.ui.menu,name:cruise_reservation.creservation_configuration_menu
+#: model:ir.ui.menu,name:cruise_reservation.menu_open_cruise_ship_rq_tree
+msgid "Reservation"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,children_price_total:0
+#: help:cruise.rq,young_price_total:0
+msgid "Total price children"
+msgstr ""
+
+#. module: cruise_reservation
+#: selection:cruise.rq,state:0
+msgid "Payment"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:class.name,name:0
+#: field:cruise.reservation.line,name:0
+msgid "Name"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+#: selection:cruise.rq,state:0
+msgid "Request"
+msgstr ""
+
+#. module: cruise_reservation
+#: view:cruise.rq:0
+#: field:cruise.rq,account_voucher_ids:0
+msgid "Payments"
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,lead_id:0
+msgid "Choose the lead for this requisition."
+msgstr ""
+
+#. module: cruise_reservation
+#: help:cruise.rq,message_ids:0
+msgid "Messages and communication history"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.rq,adults:0
+msgid "Adults"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.cabin,res_ids:0
+msgid "Reservations"
+msgstr ""
+
+#. module: cruise_reservation
+#: model:ir.model,name:cruise_reservation.model_cruise_rq
+msgid "Email Thread"
+msgstr ""
+
+#. module: cruise_reservation
+#: field:cruise.reservation.line,line_departure_ship_id:0
+#: model:ir.actions.act_window,name:cruise_reservation.open_cruise_rq_form_tree
+msgid "Ship"
+msgstr ""
+
