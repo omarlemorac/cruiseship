@@ -10,11 +10,10 @@
             llegada:
                 ${formatLang(dep.arrival_date, date=True)}.</p>
             <p>
-            % for req in dep.requisition_ids:
-            <p>
-                % for s_cabin in req.departure_ship_id.cabin_ids:
-                <p>
-                <h3>${s_cabin.name}</h3><br />
+            % for s_cabin in dep.ship_id.cabin_ids:
+                <h3>${s_cabin.name}</h3>
+                % for req in dep.requisition_ids:
+                    <p>
                     % for r_line in req.cruise_reservation_line_ids:
                         % if r_line.cabin_id.id == s_cabin.id:
                             <table width="100%">
@@ -37,15 +36,20 @@
                                     <td align="center">${r_line.rq_id.state}</td>
                                 </tr>
                             </table>
-                            
+                            <table width="100%">
+                                    <th>Fecha de confirmacion</th>
+                                    <th>Cliente</th>
+                                <tr>
+                                    <td align="center">${req.date_confirm}</td>
+                                    <td
+                                        align="center">${req.order_contact_id.name}</td>
+                                </tr>
+                            </table>
                         % endif
-                    % endfor
-                </p>
+                    %endfor    
+                    </p>
                 % endfor
-            </p>
-
             % endfor
-
             </p>
         % endfor
     </body>

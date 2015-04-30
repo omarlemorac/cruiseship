@@ -157,10 +157,10 @@ class requisition(osv.Model):
         'child_price_unit':fields.float('Child price', required=True
             ,digits_compute=dp.get_precision('Product Price')
             ,help='fields help'),
-        'date_order':fields.date('Date order',required=True, help='Date order',
-            readonly=True),
         'date_limit':fields.date('Date limit',required=True, help='Date limit'),
         'date_request':fields.date('Date request',required=True, help='Date request'),
+        'date_confirm':fields.date('Date confirm',required=True, help='Date confirm',
+            readonly=False),
         'date_payment':fields.date('Date payment',required=True, help='Date payment'),
         'date_paid':fields.date('Date paid',required=True, help='Date paid'),
         'cruise_reservation_line_ids':fields.one2many('cruise.reservation.line'
@@ -211,7 +211,7 @@ class requisition(osv.Model):
         'rq_no': lambda obj, cr, uid, context:\
             obj.pool.get('ir.sequence').get(cr, uid,'cruise.requisition'),
         'state': lambda *a: 'draft',
-        'date_order': fields.date.context_today,
+        'date_confirm': fields.date.context_today,
         'date_limit': fields.date.context_today,
         'date_request': fields.date.context_today,
         'date_payment': fields.date.context_today,

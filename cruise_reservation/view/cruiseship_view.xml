@@ -19,7 +19,7 @@
                                   <field name="rq_no" />
                                   <field name="reference" />
                                   <field name="total_spaces" />
-                                  <field name="date_order" />
+                                  <field name="date_confirm" />
                                   <field name="date_limit" />
                                   <field name="state" />
                               </group>
@@ -86,7 +86,7 @@
                               <field name="rq_no" />
                               <field name="reference" />
                               <field name="total_spaces" />
-                              <field name="date_order" />
+                              <field name="date_confirm" />
                               <field name="date_limit" />
                               <field name="state" />
                           </tree>
