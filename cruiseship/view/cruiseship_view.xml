@@ -90,6 +90,11 @@
                     <field name="adult_price_normal"/>
                     <field name="itinerary"/>
                     <field name="fast_note"/>
+                    <field name="availability"/>
+                    <field name="request"/>
+                    <field name="confirm"/>
+                    <field name="wlist"/>
+                    <field name="available"/>
                 </tree>
             </field>
         </record>
@@ -126,8 +131,72 @@
                                     <field name="child_price_normal" widget="monetary"/>
                                 </group>
                             </page>
+                            <page string="Cabins">
+                                <group>
+                                    <field name="cabin_ids" nolabel="1">
+                                      <form string="Cabins" version="7.0">
+                                        <sheet>
+                                          <group>
+                                            <field name="max_adult" />
+                                            <field name="max_child" />
+                                          </group>
+                                          <group>
+                                            <field name="cabin_type_id" />
+                                          </group>
+                                        </sheet>
+                                      </form>
+                                      <tree>
+                                        <field name="name" />
+                                      </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page string="Reservation">
+                              <field name="departure_cabin_line_ids" nolabel="1">
+                                <tree>
+                                  <field name="cabin_id" />
+                                  <field name="folio_id" string="Folio"/>
+                                  <field name="adult" />
+                                  <field name="children" />
+                                  <field name="young" />
+                                  <field name="sharing" />
+                                  <field name="state" />
+                                </tree>
+                                <form version="7.0">
+                                  <header>
+                                    <button name="action_request" type="object" string="Request" attrs="{'invisible':['|', ('state', 'not in', ['draft', 'wlist'])]}" class="oe_highlight" groups="base.group_user" context="{'active':active_id}"/>
+                                    <button name="action_confirm" type="object" string="Confirm" attrs="{'invisible':['|', ('state', '!=', 'request')]}" class="oe_highlight" groups="base.group_user"/>
+                                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible':['|', ('state', '=', 'paid'), ('state', '=', 'done')]}" groups="base.group_user"/>
+                                    <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,wlist,request,confirmed,cancel" />
+                                  </header>
+                                  <sheet>
+                                    <group>
+                                      <field name="folio_id" />
+                                      <field name="cabin_id" />
+                                    </group>
+                                    <group>
+                                      <field name="adult" />
+                                      <field name="children" />
+                                      <field name="young" />
+                                    </group>
+                                    <group>
+                                      <field name="adult_price_unit" />
+                                      <field name="child_price_unit" />
+                                      <field name="young_price_unit" />
+                                    </group>
+                                    <group>
+                                      <field name="sharing" />
+                                    </group>
+                                  </sheet>
+                                </form>
+                              </field>
+                            </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
 			</field>
         </record>

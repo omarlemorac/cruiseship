@@ -44,7 +44,7 @@ This module allows the managent of reservation for cruises departures.
     'website': 'http://www.accioma.com',
     'images' : [],
     'depends' : [
-        'crm','cruiseship','report_webkit'
+        'sale','cruiseship','report_webkit'
     ],
     'data': [
         'view/cruise_reservation_view.xml',

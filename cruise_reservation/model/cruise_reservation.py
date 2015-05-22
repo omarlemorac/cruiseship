@@ -118,8 +118,6 @@ class requisition(osv.Model):
             , string='Ordering contact', help='Ordering contact'
             , required=True, readonly=True, states={'draft':[('readonly', False)]}),
         'user_id': fields.many2one('res.users', 'Salesperson', select=True,required=True ),
-        'lead_id':fields.many2one('crm.lead', 'Lead'
-           , help='Choose the lead for this requisition.'),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
             , help='Departure', required=True, readonly=True
             , states={'draft':[('readonly', False)]}),
@@ -336,34 +334,6 @@ class requisition(osv.Model):
             self_reservation = True
 
         return self_reservation
-
-        msg = ""
-
-        capacity = self._read_capacity(cr, uid, ids)
-        print "\n====================capacity==================="
-        print ids[0]
-        print capacity
-#[FIXME] Delete or update method reserved_cabins
-        reserved_cabins = self._read_reservations(cr, uid, ids)
-
-        print reserved_cabins
-
-
-        can_share_flg = False
-        for req in self.browse(cr, uid, ids, context=context):
-            if req.total_spaces < 1:
-                raise osv.except_osv('Warning', 'You must have at least one passenger')
-
-            for line in req.cruise_reservation_line_ids:
-                values = {'cabin_id':line.cabin_id}
-                cabin_values = self._read_cabin_availability(cr, uid, ids,values )
-                duplicated = self._find_duplicated(cabin_values)
-                sharing = self._cabin_sharing(cabin_values, duplicated)
-                can_share = self._cabin_same_sharing(sharing)
-#                if can_share[line.cabin_id]:
-#                    can_share_flg = True
-
-        return can_share_flg
 
     def _check_cabin_availability(self, values):
         """check cabin availability for current requisition"""
