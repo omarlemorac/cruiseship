@@ -66,11 +66,17 @@ class cruise_cabin(osv.Model):
     _description = 'Ship cabin'
     _columns = {
         'name':fields.char('Name', 255, help='Name', required=True),
-        'ship_id':fields.many2one('cruise.ship', 'Cabin'),
+        'ship_id':fields.many2one('cruise.ship', 'Ship'),
         'cabin_type_id':fields.many2one('cruise.cabin.type', 'Cruise cabin type'
             , help='Cruise cabin type'),
         'max_adult':fields.integer('Max Adult'),
         'max_child':fields.integer('Max Child'),
+        'departure_ids':fields.many2many('cruise.departure'
+                , 'departure_cabin_rel'
+                , 'departure_id'
+                , 'cabin_id'
+                , 'Departures'
+                , help='Cabins in departure'),
         }
 
 class cabin_pax_line(osv.Model):
@@ -92,10 +98,16 @@ class cabin_pax_line(osv.Model):
         }
 
 class departure_cabin_line(osv.Model):
-    _name = 'departure.cabin.line'
+    _name = 'departure_cabin.line'
     _description = 'Line for cabin in departure'
+#    _inherits = {'tour_folio.line':'tour_folio_line_id'}
+
+
     _columns = {
         'cabin_id':fields.many2one('cruise.cabin', 'Cabin', help='Add a cabin for departure'),
+#        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin', help='Add a cabin for departure'),
+        'folio_id':fields.many2one('tour.folio', 'Folio'
+        , help='Select asociated Folio'),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
             , help='Departure'),
         'ship_id':fields.related('cabin_id'
@@ -105,8 +117,79 @@ class departure_cabin_line(osv.Model):
             , relation='cruise.ship'
             , string='Ship'
             , help='Ship related to cabin '),
+        'state': fields.selection([
+               ('draft','Draft')
+              ,('wlist','Waiting list')
+              ,('request','Request')
+              ,('confirm','Confirm')
+              ,('cancel','Cancel')
+              ]
+            , 'State',readonly=True),
+        'adult':fields.integer('Bed Space Adult', help='Bed space adult'),
+        'children':fields.integer('Bed Space Children', help='Bed space child'),
+        'young':fields.integer('Bed Space Young', help='Bed space child'),
+        'adult_price_unit':fields.float('Adult price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'young_price_unit':fields.float('Young price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'child_price_unit':fields.float('Child price', required=True
+            ,digits_compute=dp.get_precision('Product Price')
+            ,help='fields help'),
+        'sharing':fields.selection([
+            ('male_sharing', 'Male sharing'),
+            ('female_sharing', 'Female sharing'),
+            ('no_sharing', 'No sharing'),
+            ], string='Sharing type', required=True,
+            help='Select the sharing type for cabin/s'),
         }
 
+    _defaults = {
+            'state':lambda *a:'draft',
+    }
+    def _check_cabin_departure(self, cr, uid, ids, context=None):
+        cabin_line = self.browse(cr, uid, ids[0], context=context)
+        if cabin_line.cabin_id.id not in [c.id for c in
+                cabin_line.departure_id.cabin_ids]:
+            return False
+        return True
+
+    def action_request(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        cabin_line = self.browse(cr, uid, ids[0], context=context)
+        reserved = [r.cabin_id for r
+                in cabin_line.departure_id.departure_cabin_line_ids
+                if r.state in ['request', 'confirm']
+                  and r.sharing == 'no_sharing']
+
+        if cabin_line.cabin_id.id in [r.id for r in reserved]:
+            return self.write(cr, uid, ids, {'state':'wlist'})
+        return self.write(cr, uid, ids, {'state':'request'})
+
+    def action_confirm(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        cabin_line = self.browse(cr, uid, ids[0], context=context)
+        reserved = [r.cabin_id for r
+                in cabin_line.departure_id.departure_cabin_line_ids
+                if r.state in ['confirm']
+                  and r.sharing == 'no_sharing']
+
+        if cabin_line.cabin_id.id in [r.id for r in reserved]:
+            return self.write(cr, uid, ids, {'state':'wlist'})
+        return self.write(cr, uid, ids, {'state':'confirm'})
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {'state':'cancel'})
+
+    _constraints = [
+            (_check_cabin_departure, 'Cabin not available please check Ship/Cabin'
+                , ['cabin_id'])
+    ]
 class departure_ship_line(osv.Model):
 
     '''Ships on departure'''
@@ -129,6 +212,39 @@ class departure_ship_line(osv.Model):
 class departure(osv.Model):
     _name = 'cruise.departure'
     _description = 'Cruise Departure'
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
+
+    def _availability(self, cr, uid, ids, field_name, arg, context=None):
+        if context==None:
+            context={}
+        res = {}
+        for dep in self.browse(cr, uid, ids, context):
+            av_tot = sum([c.max_adult for c in dep.cabin_ids])
+            res[dep.id] = {}
+            res[dep.id]['availability'] = av_tot
+            request_no_sharing=sum([l.cabin_id.max_adult for l in dep.departure_cabin_line_ids
+                if l.state == 'request' and l.sharing=='no_sharing'])
+            request_sharing=sum([l.adult + l.young
+                for l in dep.departure_cabin_line_ids
+                if l.state == 'request' and l.sharing!='no_sharing'])
+            res[dep.id]['request'] = request_no_sharing + request_sharing
+            confirm_no_sharing=sum([l.cabin_id.max_adult for l in dep.departure_cabin_line_ids
+                if l.state == 'confirm' and l.sharing=='no_sharing'])
+            confirm_sharing=sum([l.adult + l.young
+                for l in dep.departure_cabin_line_ids
+                if l.state == 'confirm' and l.sharing!='no_sharing'])
+            res[dep.id]['confirm'] = confirm_no_sharing + confirm_sharing
+            wlist_no_sharing=sum([l.cabin_id.max_adult for l in dep.departure_cabin_line_ids
+                if l.state == 'wlist' and l.sharing=='no_sharing'])
+            wlist_sharing=sum([l.adult + l.young
+                for l in dep.departure_cabin_line_ids
+                if l.state == 'wlist' and l.sharing!='no_sharing'])
+            res[dep.id]['wlist'] = wlist_no_sharing + wlist_sharing
+            res[dep.id]['available'] = av_tot - (request_no_sharing+
+                    request_sharing+confirm_no_sharing+confirm_sharing+
+                    wlist_no_sharing+wlist_sharing)
+
+        return res
 
     _columns = {
         'name':fields.char('Name', 255, help='Name', required=True),
@@ -140,6 +256,13 @@ class departure(osv.Model):
         'ship_id':fields.many2one('cruise.ship', 'Ship',
             help='Add a ship for departure', required=True),
         'itinerary':fields.char('Itinerary', 50, help='Itinerary for this departure '),
+        'cabin_ids':fields.many2many('cruise.cabin'
+                , 'departure_cabin_rel'
+                , 'cabin_id'
+                , 'departure_id'
+                , 'Cabins'
+                , help='Cabins in departure'),
+
         'max_capacity':fields.related(
               'ship_id'
             , 'max_pax'
@@ -158,6 +281,29 @@ class departure(osv.Model):
             ,help='fields help'),
         'fast_note':fields.char('Note', 100,
             help='A fast note to briefly inform users'),
+        'departure_cabin_line_ids':fields.one2many('departure_cabin.line'
+            , 'departure_id'
+            , 'Cabins reserved'
+            , help='Add cabins reserved'),
+        'availability':fields.function(_availability
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Availability', help='Cabin Availability'),
+        'request':fields.function(_availability
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Request', help='Cabin spaces requested'),
+        'confirm':fields.function(_availability
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Confirm', help='Cabin spaces confirmed'),
+        'wlist':fields.function(_availability
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Waiting List'
+            , help='Cabin spaces in waiting list'),
+        'available':fields.function(_availability
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Available', help='Cabin spaces available'),
+
+
+
 
             }
 
@@ -165,6 +311,18 @@ class departure(osv.Model):
         'departure_date':fields.date.context_today,
         'arrival_date': fields.date.context_today,
             }
+
+
+
+    def create(self, cr, uid, values, context=None):
+        _id = super(departure, self).create(cr,uid,values)
+        departure_obj = self.browse(cr,uid,[_id])[0]
+        cabins = [(6,0,[cabin.id for cabin in departure_obj.ship_id.cabin_ids])]
+        values = {}
+        values['cabin_ids'] = cabins
+        update_cabins = super(departure, self).write(cr,uid,[_id],values)
+        return _id
+
 
     def onchange_ship(self, cr, uid, ids, ship_id, departure_date,
             arrival_date, context=None):
