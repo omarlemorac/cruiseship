@@ -22,7 +22,6 @@
 from osv import osv, fields
 import openerp.addons.decimal_precision as dp
 import datetime
-
 class cruise_ship(osv.Model):
     _name = "cruise.ship"
     _description = "Ship"
@@ -160,13 +159,36 @@ class departure_cabin_line(osv.Model):
             context = {}
 
         cabin_line = self.browse(cr, uid, ids[0], context=context)
+        cabin_id = cabin_line.cabin_id.id
         reserved = [r.cabin_id for r
                 in cabin_line.departure_id.departure_cabin_line_ids
                 if r.state in ['request', 'confirm']
                   and r.sharing == 'no_sharing']
 
+        if cabin_id in [r.id for r in reserved]:
+            return self.write(cr, uid, ids, {'state':'wlist'})
+
+        max_adult = cabin_line.cabin_id.max_adult
+        sharing = cabin_line.sharing
+        adult = cabin_line.adult
+
+        #Reserved diferent sharing
+        reserved = [r.cabin_id for r
+                in cabin_line.departure_id.departure_cabin_line_ids
+                if r.state in ['request', 'confirm']
+                  and r.sharing != sharing]
+
         if cabin_line.cabin_id.id in [r.id for r in reserved]:
             return self.write(cr, uid, ids, {'state':'wlist'})
+
+        res_adults = sum([c.adult for c
+                in cabin_line.departure_id.departure_cabin_line_ids
+                if c.state in ['request', 'confirm']
+                  and c.sharing == sharing])
+
+        if max_adult < res_adults + adult:
+            return self.write(cr, uid, ids, {'state':'wlist'})
+
         return self.write(cr, uid, ids, {'state':'request'})
 
     def action_confirm(self, cr, uid, ids, context=None):
@@ -174,6 +196,7 @@ class departure_cabin_line(osv.Model):
             context = {}
 
         cabin_line = self.browse(cr, uid, ids[0], context=context)
+        cabin_id = cabin_line.cabin_id.id
         reserved = [r.cabin_id for r
                 in cabin_line.departure_id.departure_cabin_line_ids
                 if r.state in ['confirm']
@@ -181,6 +204,28 @@ class departure_cabin_line(osv.Model):
 
         if cabin_line.cabin_id.id in [r.id for r in reserved]:
             return self.write(cr, uid, ids, {'state':'wlist'})
+
+        max_adult = cabin_line.cabin_id.max_adult
+        sharing = cabin_line.sharing
+        adult = cabin_line.adult
+
+        #Reserved diferent sharing
+        reserved = [r.cabin_id for r
+                in cabin_line.departure_id.departure_cabin_line_ids
+                if r.state in ['request', 'confirm']
+                  and r.sharing != sharing]
+
+        if cabin_line.cabin_id.id in [r.id for r in reserved]:
+            return self.write(cr, uid, ids, {'state':'wlist'})
+
+        res_adults = sum([c.adult for c
+                in cabin_line.departure_id.departure_cabin_line_ids
+                if c.state in ['request', 'confirm']
+                  and c.sharing == sharing])
+
+        if max_adult < res_adults + adult:
+            return self.write(cr, uid, ids, {'state':'wlist'})
+
         return self.write(cr, uid, ids, {'state':'confirm'})
 
     def action_cancel(self, cr, uid, ids, context=None):
