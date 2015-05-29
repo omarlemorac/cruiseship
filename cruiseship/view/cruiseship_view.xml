@@ -156,6 +156,9 @@
                                 <tree>
                                   <field name="cabin_id" />
                                   <field name="folio_id" string="Folio"/>
+                                  <field name="partner_id" />
+                                  <field name="user_id" />
+                                  <field name="confirm_date" />
                                   <field name="adult" />
                                   <field name="children" />
                                   <field name="young" />

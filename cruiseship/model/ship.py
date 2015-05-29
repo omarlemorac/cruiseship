@@ -142,6 +142,16 @@ class departure_cabin_line(osv.Model):
             ('no_sharing', 'No sharing'),
             ], string='Sharing type', required=True,
             help='Select the sharing type for cabin/s'),
+        'confirm_date':fields.related('folio_id'
+          , 'confirm_date', type='date', string='Confirm Date'
+          , help='Confirm Date'),
+        'partner_id':fields.related('folio_id'
+          , 'partner_id', type='many2one', string='Customer',relation='res.partner'
+          , help='Customer'),
+        'user_id':fields.related('folio_id'
+          , 'user_id', type='many2one', string='Sales Person',relation='res.users'
+          , help='Customer'),
+
         }
 
     _defaults = {
