@@ -190,6 +190,30 @@
                                     <group>
                                       <field name="sharing" />
                                     </group>
+                                    <notebook>
+                                      <page string="Passenger List">
+                                        <group>
+                                          <field name="cabin_pax_line_ids"
+                                            nolabel="1">
+                                            <tree>
+                                              <field name="pax_id" />
+                                            </tree>
+                                            <form version="7.0">
+                                              <group>
+                                                <field name="pax_id" />
+                                                <field name="age_ref" />
+                                                <field name="celebration" />
+                                                <field name="tour_company" />
+                                              </group>
+                                              <group>
+                                                <field name="arriving_flight" />
+                                                <field name="departure_flight" />
+                                              </group>
+                                            </form>
+                                          </field>
+                                        </group>
+                                      </page>
+                                    </notebook>
                                   </sheet>
                                 </form>
                               </field>

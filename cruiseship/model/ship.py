@@ -94,6 +94,19 @@ class cabin_pax_line(osv.Model):
             , help='Age reference'),
         'bed_space_adult':fields.integer('Bed Space Adult', help='Bed space adult'),
         'bed_space_child':fields.integer('Bed Space Child', help='Bed space child'),
+        'departure_cabin_line_id':fields.many2one('departure_cabin.line'
+            , 'Departure Cabin Line'
+            , help='Departure Cabin Line'),
+        'celebration':fields.char('Celebration', 255
+            , help='Are you celebrating any special event during your trip?'),
+        'accomodation':fields.char('Accomodation', 255
+            , help='Hotel accomodation in Ecuador'),
+        'tour_company':fields.char('Tour Company', 255
+            , help='Tour company providing services in Ecuador'),
+        'arriving_flight':fields.char('Arriving Flight', 255
+            , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)'),
+        'departure_flight':fields.char('Departure Flight', 255
+            , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)'),
         }
 
 class departure_cabin_line(osv.Model):
@@ -151,6 +164,10 @@ class departure_cabin_line(osv.Model):
         'user_id':fields.related('folio_id'
           , 'user_id', type='many2one', string='Sales Person',relation='res.users'
           , help='Customer'),
+        'cabin_pax_line_ids':fields.one2many('cabin.pax.line'
+            , 'departure_cabin_line_id', 'Passenger'
+            , help='Add passenger for this departure'),
+
 
         }
 
