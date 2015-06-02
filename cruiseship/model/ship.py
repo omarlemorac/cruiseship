@@ -191,10 +191,17 @@ class departure_cabin_line(osv.Model):
             context = {}
         cabin_line = self.browse(cr, uid, ids[0], context=context)
         cabin_id = cabin_line.cabin_id.id
-        reserved = [r.cabin_id for r
-                in cabin_line.departure_id.departure_cabin_line_ids
-                if r.state in ['request', 'confirm']
-                  and r.sharing == 'no_sharing']
+        reserved = []
+        if target_state == 'request':
+            reserved = [r.cabin_id for r
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if r.state in ['request', 'confirm']
+                      and r.sharing == 'no_sharing']
+        if target_state == 'confirm':
+            reserved = [r.cabin_id for r
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if r.state in ['confirm']
+                      and r.sharing == 'no_sharing']
 
         #If cabin is already reserved in no_sharing state='wlist'
         if cabin_id in [r.id for r in reserved]:
@@ -206,9 +213,15 @@ class departure_cabin_line(osv.Model):
 
         #If cabin is already reserved an current reservation is no_sharing state='wlist'
         if sharing == 'no_sharing':
-            reserved = [r.cabin_id for r
-                    in cabin_line.departure_id.departure_cabin_line_ids
-                    if r.state in ['request', 'confirm']]
+            reserved = []
+            if target_state == 'request':
+                reserved = [r.cabin_id for r
+                        in cabin_line.departure_id.departure_cabin_line_ids
+                        if r.state in ['request', 'confirm']]
+            if target_state == 'confirm':
+                reserved = [r.cabin_id for r
+                        in cabin_line.departure_id.departure_cabin_line_ids
+                        if r.state in ['confirm']]
             if cabin_id in [r.id for r in reserved]:
                 return self.write(cr, uid, ids, {'state':'wlist'})
             else:
@@ -299,10 +312,34 @@ class departure(osv.Model):
                 if l.state == 'wlist' and l.sharing!='no_sharing'])
             res[dep.id]['wlist'] = wlist_no_sharing + wlist_sharing
             res[dep.id]['available'] = av_tot - (request_no_sharing+
-                    request_sharing+confirm_no_sharing+confirm_sharing+
-                    wlist_no_sharing+wlist_sharing)
+                    request_sharing+confirm_no_sharing+confirm_sharing)
+
 
         return res
+
+    def _total_spaces(self, cr, uid, ids, field_name, arg, context=None):
+        if context==None:
+            context={}
+        res = {}
+        for dep in self.browse(cr, uid, ids, context):
+            res[dep.id] = {}
+            res[dep.id]['total_adults'] = 0
+            res[dep.id]['total_children'] = 0
+            res[dep.id]['total_young'] = 0
+            res[dep.id]['total_spaces_taken'] = 0
+            for cline in dep.departure_cabin_line_ids:
+                if cline.state in ['request', 'confirm']:
+                    res[dep.id]['total_adults'] += cline.adult
+                    res[dep.id]['total_children'] += cline.children
+                    res[dep.id]['total_young'] += cline.young
+
+            res[dep.id]['total_spaces_taken'] = res[dep.id]['total_adults'] +\
+                res[dep.id]['total_children'] +\
+                res[dep.id]['total_young']
+
+
+        return res
+
 
     _columns = {
         'name':fields.char('Name', 255, help='Name', required=True),
@@ -359,6 +396,18 @@ class departure(osv.Model):
         'available':fields.function(_availability
             , method=True, store=False, type="integer", fnct_search=None
             , multi=True, string='Available', help='Cabin spaces available'),
+        'total_adults':fields.function(_total_spaces
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Total Adults', help='Total adults reserving'),
+        'total_children':fields.function(_total_spaces
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Total Children', help='Total children reserving'),
+        'total_young':fields.function(_total_spaces
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Total Young', help='Total young reserving'),
+        'total_spaces_taken':fields.function(_total_spaces
+            , method=True, store=False, type="integer", fnct_search=None
+            , multi=True, string='Total Spaces Taken', help='Total spaces taken'),
 
 
 

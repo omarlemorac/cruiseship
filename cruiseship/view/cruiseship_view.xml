@@ -113,12 +113,21 @@
                             </h1>
                         </div>
                         <group>
-                            <field name="departure_date" on_change="onchange_ship(ship_id, departure_date, arrival_date)"/>
-                            <field name="arrival_date" on_change="onchange_ship(ship_id, departure_date, arrival_date)" />
-                            <field name="ship_id" on_change="onchange_ship(ship_id, departure_date, arrival_date)" />
-                            <field name="fast_note"/>
-                            <field name="max_capacity" />
-                            <field name="itinerary" />
+                          <group>
+                              <field name="departure_date" on_change="onchange_ship(ship_id, departure_date, arrival_date)"/>
+                              <field name="arrival_date" on_change="onchange_ship(ship_id, departure_date, arrival_date)" />
+                              <field name="ship_id" on_change="onchange_ship(ship_id, departure_date, arrival_date)" />
+                              <field name="fast_note"/>
+                              <field name="max_capacity" />
+                              <field name="itinerary" />
+                          </group>
+                          <group>
+                            <field name="total_adults" />
+                            <field name="total_children" />
+                            <field name="total_young" />
+                            <field name="total_spaces_taken" />
+
+                          </group>
                         </group>
                         <notebook>
                             <page string="Observations">
