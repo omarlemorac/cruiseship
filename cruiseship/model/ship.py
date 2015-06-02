@@ -184,7 +184,11 @@ class departure_cabin_line(osv.Model):
     def action_request(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
+        self.action_reqconf(cr, uid, ids, 'request', context)
 
+    def action_reqconf(self, cr, uid, ids, target_state, context=None):
+        if context is None:
+            context = {}
         cabin_line = self.browse(cr, uid, ids[0], context=context)
         cabin_id = cabin_line.cabin_id.id
         reserved = [r.cabin_id for r
@@ -192,6 +196,7 @@ class departure_cabin_line(osv.Model):
                 if r.state in ['request', 'confirm']
                   and r.sharing == 'no_sharing']
 
+        #If cabin is already reserved in no_sharing state='wlist'
         if cabin_id in [r.id for r in reserved]:
             return self.write(cr, uid, ids, {'state':'wlist'})
 
@@ -199,61 +204,42 @@ class departure_cabin_line(osv.Model):
         sharing = cabin_line.sharing
         adult = cabin_line.adult
 
-        #Reserved diferent sharing
-        reserved = [r.cabin_id for r
-                in cabin_line.departure_id.departure_cabin_line_ids
-                if r.state in ['request', 'confirm']
-                  and r.sharing != sharing]
+        #If cabin is already reserved an current reservation is no_sharing state='wlist'
+        if sharing == 'no_sharing':
+            reserved = [r.cabin_id for r
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if r.state in ['request', 'confirm']]
+            if cabin_id in [r.id for r in reserved]:
+                return self.write(cr, uid, ids, {'state':'wlist'})
+            else:
+                return self.write(cr, uid, ids, {'state':target_state})
+        else: #Otherwise current reservation is male or female sharing
+            #Cabin is reserved with diferent sharing
+            reserved = [c.cabin_id.id for c
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if c.state in ['request', 'request']
+                      and c.sharing != sharing
+                      and c.cabin_id.id == cabin_id]
+            if reserved:
+                return self.write(cr, uid, ids, {'state':'wlist'})
 
-        if cabin_line.cabin_id.id in [r.id for r in reserved]:
-            return self.write(cr, uid, ids, {'state':'wlist'})
+            #Reserved same sharing
+            res_adults = sum([c.adult for c
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if c.state in ['request', 'confirm']
+                      and c.sharing == sharing
+                      and c.cabin_id.id == cabin_id
+                      ])
 
-        res_adults = sum([c.adult for c
-                in cabin_line.departure_id.departure_cabin_line_ids
-                if c.state in ['request', 'confirm']
-                  and c.sharing == sharing])
+            if max_adult < res_adults + adult:
+                return self.write(cr, uid, ids, {'state':'wlist'})
 
-        if max_adult < res_adults + adult:
-            return self.write(cr, uid, ids, {'state':'wlist'})
-
-        return self.write(cr, uid, ids, {'state':'request'})
+        return self.write(cr, uid, ids, {'state':target_state})
 
     def action_confirm(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
-
-        cabin_line = self.browse(cr, uid, ids[0], context=context)
-        cabin_id = cabin_line.cabin_id.id
-        reserved = [r.cabin_id for r
-                in cabin_line.departure_id.departure_cabin_line_ids
-                if r.state in ['confirm']
-                  and r.sharing == 'no_sharing']
-
-        if cabin_line.cabin_id.id in [r.id for r in reserved]:
-            return self.write(cr, uid, ids, {'state':'wlist'})
-
-        max_adult = cabin_line.cabin_id.max_adult
-        sharing = cabin_line.sharing
-        adult = cabin_line.adult
-
-        #Reserved diferent sharing
-        reserved = [r.cabin_id for r
-                in cabin_line.departure_id.departure_cabin_line_ids
-                if r.state in ['request', 'confirm']
-                  and r.sharing != sharing]
-
-        if cabin_line.cabin_id.id in [r.id for r in reserved]:
-            return self.write(cr, uid, ids, {'state':'wlist'})
-
-        res_adults = sum([c.adult for c
-                in cabin_line.departure_id.departure_cabin_line_ids
-                if c.state in ['request', 'confirm']
-                  and c.sharing == sharing])
-
-        if max_adult < res_adults + adult:
-            return self.write(cr, uid, ids, {'state':'wlist'})
-
-        return self.write(cr, uid, ids, {'state':'confirm'})
+        self.action_reqconf(cr, uid, ids, 'confirm', context)
 
     def action_cancel(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {'state':'cancel'})

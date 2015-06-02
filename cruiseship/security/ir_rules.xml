@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <record id="user_can_delete_not_confirmed" model="ir.rule">
+        <field name="name">User Can Delete Not Confirmed Cabin Reservation</field>
+        <field name="model_id" ref="model_departure_cabin_line"/>
+        <field name="groups" eval="[(4, ref('cruiseship.cruiseship_group_user'))]"/>
+        <field name="perm_read" eval="0"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">
+            ['&amp;', ('state','!=','confirm'), ('user_id', '=', user.id)]
+        </field>
+    </record>
+    </data>
+</openerp>
+

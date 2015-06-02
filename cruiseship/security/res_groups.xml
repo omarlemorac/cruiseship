@@ -8,5 +8,9 @@
             <field name="category_id" ref="category_cruiseship"/>
             <field name="name">Cruiseship User</field>
         </record>
+        <record id="cruiseship_group_manager" model="res.groups">
+            <field name="category_id" ref="category_cruiseship"/>
+            <field name="name">Cruiseship Manager</field>
+        </record>
     </data>
 </openerp>
