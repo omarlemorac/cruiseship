@@ -84,7 +84,7 @@
             <field name="model">cruise.departure</field>
             <field name="arch" type="xml">
                 <search string="Departure custom filter">
-                    <filter string="Not operated departures" 
+                    <filter string="Not operated" 
                       name="notoperated"
                        domain="[('departure_date','&lt;=',((context_today()).strftime('%%Y-%%m-%%d')))]"
                         />
@@ -195,7 +195,7 @@
                                     <button name="action_request" type="object" string="Request" attrs="{'invisible':['|', ('state', 'not in', ['draft', 'wlist'])]}" class="oe_highlight" groups="base.group_user" context="{'active':active_id}"/>
                                     <button name="action_confirm" type="object" string="Confirm" attrs="{'invisible':['|', ('state', '!=', 'request')]}" class="oe_highlight" groups="base.group_user"/>
                                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible':['|', ('state', '=', 'paid'), ('state', '=', 'done')]}" groups="cruiseship.cruiseship_group_manager"/>
-                                    <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,wlist,request,confirmed,cancel" />
+                                    <field name="state" widget="statusbar" nolabel="1" statusbar_visible="wlist,request,confirmed,cancel" />
                                   </header>
                                   <sheet>
                                     <group>

@@ -261,6 +261,13 @@ class departure_cabin_line(osv.Model):
             (_check_cabin_departure, 'Cabin not available please check Ship/Cabin'
                 , ['cabin_id'])
     ]
+
+    def create(self, cr, uid, values, context=None):
+        _id = super(departure_cabin_line, self).create(cr,uid,values)
+        request = self.action_request(cr, uid, [_id])
+        return _id
+
+
 class departure_ship_line(osv.Model):
 
     '''Ships on departure'''
@@ -408,16 +415,12 @@ class departure(osv.Model):
         'total_spaces_taken':fields.function(_total_spaces
             , method=True, store=False, type="integer", fnct_search=None
             , multi=True, string='Total Spaces Taken', help='Total spaces taken'),
-
-
-
-
-            }
+    }
 
     _defaults = {
         'departure_date':fields.date.context_today,
         'arrival_date': fields.date.context_today,
-            }
+    }
 
 
 
