@@ -90,7 +90,7 @@
                         />
                     <separator />
                     <group expand="0" string="Group by ..">
-                        <filter string="Departure" domain="[]" context="{'group_by':'ship_id'}" />
+                        <filter string="Ship" domain="[]" context="{'group_by':'ship_id'}" />
                     </group>
                 </search>
             </field>
