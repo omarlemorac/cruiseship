@@ -79,10 +79,26 @@
         <!--====================================================
 							Departure	
 		==================================================== -->
-		<record model="ir.ui.view" id="view_departure_list_view">
-			<field name="name">departure.tree</field>
+        <record id="cruise_departure_search_form_view" model="ir.ui.view">
+            <field name="name">cruise.departure.search.form</field>
             <field name="model">cruise.departure</field>
             <field name="arch" type="xml">
+                <search string="Departure custom filter">
+                    <filter string="Not operated departures" 
+                      name="notoperated"
+                       domain="[('departure_date','&lt;=',((context_today()).strftime('%%Y-%%m-%%d')))]"
+                        />
+                    <separator />
+                    <group expand="0" string="Group by ..">
+                        <filter string="Departure" domain="[]" context="{'group_by':'ship_id'}" />
+                    </group>
+                </search>
+            </field>
+          </record>
+          <record model="ir.ui.view" id="view_departure_list_view">
+            <field name="name">departure.tree</field>
+            <field name="model">cruise.departure</field>
+              <field name="arch" type="xml">
                 <tree string="Departure">
                     <field name="name"/>
                     <field name="departure_date" />
@@ -96,8 +112,8 @@
                     <field name="wlist"/>
                     <field name="available"/>
                 </tree>
-            </field>
-        </record>
+              </field>
+            </record>
 		<record model="ir.ui.view" id="view_departure_ship_form">
 			<field name="name">departure.form</field>
 			<field name="model">cruise.departure</field>
@@ -241,6 +257,8 @@
 			<field name="res_model">cruise.departure</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
+      <field name="context">{"search_default_notoperated":1} </field>
+      <field name="search_view_id" ref="cruise_departure_search_form_view" />
 		</record>
 		<menuitem name="Departure"
 		          id="menu_open_cruise_departure_form_tree" 
