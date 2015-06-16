@@ -291,6 +291,7 @@ class departure(osv.Model):
     _name = 'cruise.departure'
     _description = 'Cruise Departure'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
+    _order='departure_date'
 
     def _availability(self, cr, uid, ids, field_name, arg, context=None):
         if context==None:

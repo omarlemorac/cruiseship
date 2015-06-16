@@ -86,7 +86,7 @@
                 <search string="Departure custom filter">
                     <filter string="Not operated" 
                       name="notoperated"
-                       domain="[('departure_date','&lt;=',((context_today()).strftime('%%Y-%%m-%%d')))]"
+                       domain="[('departure_date','&gt;=',((context_today()).strftime('%%Y-%%m-%%d')))]"
                         />
                     <separator />
                     <group expand="0" string="Group by ..">
