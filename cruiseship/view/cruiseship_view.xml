@@ -41,9 +41,11 @@
                                         <field name="cabin_type_id" />
                                         <field name="max_adult" />
                                         <field name="max_child" />
+                                        <field name="categ_id" />
                                     </form>
                                     <tree string="Cabin" editable="bottom">
                                         <field name="name" />
+                                        <field name="categ_id" />
                                         <field name="cabin_type_id" />
                                         <field name="max_adult" />
                                         <field name="max_child" />

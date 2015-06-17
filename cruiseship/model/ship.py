@@ -63,8 +63,9 @@ class cabin_type(osv.Model):
 class cruise_cabin(osv.Model):
     _name = 'cruise.cabin'
     _description = 'Ship cabin'
+    _inherit = 'product.product'
     _columns = {
-        'name':fields.char('Name', 255, help='Name', required=True),
+        #'name':fields.char('Name', 255, help='Name', required=True),
         'ship_id':fields.many2one('cruise.ship', 'Ship'),
         'cabin_type_id':fields.many2one('cruise.cabin.type', 'Cruise cabin type'
             , help='Cruise cabin type'),
@@ -77,6 +78,9 @@ class cruise_cabin(osv.Model):
                 , 'Departures'
                 , help='Cabins in departure'),
         }
+    _defaults = {
+        'type':'service',
+    }
 
 class cabin_pax_line(osv.Model):
 
@@ -112,12 +116,12 @@ class cabin_pax_line(osv.Model):
 class departure_cabin_line(osv.Model):
     _name = 'departure_cabin.line'
     _description = 'Line for cabin in departure'
-#    _inherits = {'tour_folio.line':'tour_folio_line_id'}
+    _inherits = {'tour_folio.line':'tour_folio_line_id'}
 
 
     _columns = {
         'cabin_id':fields.many2one('cruise.cabin', 'Cabin', help='Add a cabin for departure'),
-#        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin', help='Add a cabin for departure'),
+        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin', help='Add a cabin for departure'),
         'folio_id':fields.many2one('tour.folio', 'Folio'
         , help='Select asociated Folio'),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
