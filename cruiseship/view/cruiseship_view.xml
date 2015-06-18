@@ -200,10 +200,15 @@
                                     <field name="state" widget="statusbar" nolabel="1" statusbar_visible="wlist,request,confirmed,cancel" />
                                   </header>
                                   <sheet>
-                                    <group>
-                                      <field name="folio_id" />
+                                    <div class="oe_title">
+                                      <div class="oe_edit_only">
+                                          <label for="folio_id" string="Folio"/>
+                                      </div>
+                                      <h1>
+                                          <field name="folio_id"/>
+                                      </h1>
                                       <field name="cabin_id" />
-                                    </group>
+                                    </div>
                                     <group>
                                       <field name="adult" />
                                       <field name="children" />
@@ -216,6 +221,11 @@
                                     </group>
                                     <group>
                                       <field name="sharing" />
+                                    </group>
+                                    <group>
+                                      <field name='option_date' />
+                                      <field name="deposit_date" />
+                                      <field name='balance_date' />
                                     </group>
                                     <notebook>
                                       <page string="Passenger List">

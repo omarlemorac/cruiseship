@@ -120,10 +120,11 @@ class departure_cabin_line(osv.Model):
 
 
     _columns = {
-        'cabin_id':fields.many2one('cruise.cabin', 'Cabin', help='Add a cabin for departure'),
+        'cabin_id':fields.many2one('cruise.cabin', 'Cabin'
+           , help='Add a cabin for departure', required=True),
         'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin', help='Add a cabin for departure'),
-        'folio_id':fields.many2one('tour.folio', 'Folio'
-        , help='Select asociated Folio'),
+#        'folio_id':fields.many2one('tour.folio', 'Folio'
+#        , help='Select asociated Folio',required=True),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
             , help='Departure'),
         'ship_id':fields.related('cabin_id'
@@ -267,6 +268,18 @@ class departure_cabin_line(osv.Model):
     ]
 
     def create(self, cr, uid, values, context=None):
+        print values
+        values['order_id'] = values['folio_id']
+        cabin_obj = self.pool.get('product.product')
+        departure_obj = self.pool.get('cruise.departure')
+        cabin =  cabin_obj.browse(cr, uid, [values['cabin_id']])[0]
+        departure = departure_obj.browse(cr,uid,[values['departure_id']])[0]
+        dadult = values['adult'] and "{} adult(s) ".format(values['adult']) or ""
+        dchildren = values['children'] and "{} child(ren) ".format(values['children']) or ""
+        dyoung = values['young'] and "{} young ".format(values['young']) or ""
+        description = "{} arrival:{} departure:{}. {} {} {}".format(cabin.name, departure.arrival_date,
+                departure.departure_date, dadult, dchildren, dyoung)
+        values['name'] = description
         _id = super(departure_cabin_line, self).create(cr,uid,values)
         request = self.action_request(cr, uid, [_id])
         return _id
