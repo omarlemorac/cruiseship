@@ -88,7 +88,8 @@ class cabin_pax_line(osv.Model):
 
     _name = 'cabin.pax.line'
     _columns = {
-        'pax_id':fields.many2one('res.partner', 'Pax', help='Pax using cabin'),
+        'pax_id':fields.many2one('res.partner', 'Passenger', help='Pax using cabin',
+            domain="[('is_pax','=', True)]"),
         'age_ref':fields.selection([
             ('adult','Adult'),
             ('young','Young'),
@@ -111,6 +112,27 @@ class cabin_pax_line(osv.Model):
             , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)'),
         'departure_flight':fields.char('Departure Flight', 255
             , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)'),
+        'arrival_from_airport_id':fields.many2one('touroperation.airport',
+            'Arrival Airport From', help='Arrival airport From'),
+        'arrival_to_airport_id':fields.many2one('touroperation.airport',
+            'Arrival Airport To', help='Arrival airport destination'),
+        'departure_from_airport_id':fields.many2one('touroperation.airport',
+            'Departure Airport From', help='Departure Airport From'),
+        'departure_to_airport_id':fields.many2one('touroperation.airport',
+            'Departure Airport To', help='Departure airport destination'),
+        'flight_number':fields.char('Flight Number', 100, help='Flight number'),
+        'departure_time':fields.datetime('Departure Time', help='Set departure time'),
+        'arrival_time':fields.datetime('Arrival Time', help='Set arrival time'),
+        'ni':fields.char('Number of Identification', 100, help='Number of Identification'),
+        'arrange_ticket':fields.boolean('Arrange Ticket?', help='Arrange passenger ticket?'),
+        'arrange_migration_card':fields.boolean('Arrange Migration Card?',
+            help='Arrange passenger migration card?'),
+
+
+
+
+
+
         }
 
 class departure_cabin_line(osv.Model):
@@ -122,7 +144,9 @@ class departure_cabin_line(osv.Model):
     _columns = {
         'cabin_id':fields.many2one('cruise.cabin', 'Cabin'
            , help='Add a cabin for departure', required=True),
-        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin', help='Add a cabin for departure'),
+        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin'
+            , help='Add a cabin for departure'
+            , ondelete='cascade'),
 #        'folio_id':fields.many2one('tour.folio', 'Folio'
 #        , help='Select asociated Folio',required=True),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
@@ -161,7 +185,7 @@ class departure_cabin_line(osv.Model):
             ], string='Sharing type', required=True,
             help='Select the sharing type for cabin/s'),
         'confirm_date':fields.related('folio_id'
-          , 'confirm_date', type='date', string='Confirm Date'
+          , 'payment_date', type='date', string='Confirm Date'
           , help='Confirm Date'),
         'partner_id':fields.related('folio_id'
           , 'partner_id', type='many2one', string='Customer',relation='res.partner'

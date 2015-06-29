@@ -236,15 +236,36 @@
                                               <field name="pax_id" />
                                             </tree>
                                             <form version="7.0">
-                                              <group>
-                                                <field name="pax_id" />
-                                                <field name="age_ref" />
-                                                <field name="celebration" />
-                                                <field name="tour_company" />
+                                              <div class="oe_title">
+                                                <div class="oe_edit_only">
+                                                  <label for="pax_id" string="Passenger"/>
+                                                </div>
+                                                <h1>
+                                                  <field name="pax_id"/>
+                                                </h1>
+                                                <div class="oe_edit_only">
+                                                  <label for="ni" string="Identification Number"/>
+                                                </div>
+                                                <h2>
+                                                  <field name="ni" />
+                                                </h2>
+                                              </div>
+                                              <group colspan="2">
+                                                <field name="departure_from_airport_id" />
+                                                <field name="departure_to_airport_id" />
+                                                <field name="departure_time" />
                                               </group>
+                                              <group colspan="2">
+                                                <field name="arrival_from_airport_id" />
+                                                <field name="arrival_to_airport_id" />
+                                                <field name="arrival_time" />
+                                                <field name="flight_number" />
+                                              </group>
+                                                <label for="arrange_ticket" string="Arrange Ticket" />
+                                                <field name="arrange_ticket" />
+                                                <label for="arrange_migration_card" string="Arrange Migration Card" />
+                                                <field name="arrange_migration_card" />
                                               <group>
-                                                <field name="arriving_flight" />
-                                                <field name="departure_flight" />
                                               </group>
                                             </form>
                                           </field>
