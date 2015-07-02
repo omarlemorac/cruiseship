@@ -22,8 +22,6 @@
 from osv import osv, fields
 import openerp.addons.decimal_precision as dp
 import datetime
-
-GENDER_LIST = [('m', 'Male'), ('f', 'Female')]
 class cruise_ship(osv.Model):
     _name = "cruise.ship"
     _description = "Ship"
@@ -90,11 +88,8 @@ class cabin_pax_line(osv.Model):
 
     _name = 'cabin.pax.line'
     _columns = {
-        'pax_id':fields.many2one('res.partner', 'Passenger', required=True
-            , help='Pax using cabin',
+        'pax_id':fields.many2one('res.partner', 'Passenger', help='Pax using cabin',
             domain="[('is_pax','=', True)]"),
-        'id_no':fields.char('Identification Number', 100, required=True
-                , help='Identification Number'),
         'age_ref':fields.selection([
             ('adult','Adult'),
             ('young','Young'),
@@ -117,46 +112,52 @@ class cabin_pax_line(osv.Model):
             , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)'),
         'ib_ap_dep_id':fields.many2one('touroperation.airport'
             , 'Departure Airport Inbound'
-            , help='Select departure airport inbound'),
+            , help='Select departure airport inbound')
         'ib_ap_arr_id':fields.many2one('touroperation.airport'
-            , 'Arrival Airport Inbound'
-            , help='Select arrival airport inbound'),
-        'ib_time_dep':fields.datetime('Departure Inbound Time'),
-        'ib_time_arr':fields.datetime('Arrival Inbound Time'),
+            , 'Arrival Airport Inbound', help='Select arrival airport inbound')
+        'ib_time_dep':fields.datetime('Departure Inbound Time')
+        'ib_time_arr':fields.datetime('Arrival Inbound Time')
         'ib_airline_id':fields.many2one('touroperation.airline'
             , 'Departure Airline Inbound'
-            , help='Select inbound departure airline'),
+            , help='Select inbound departure airline')
         'ib_flight_no':fields.char('Inbound Flight Number'
-            , help='Inbound Flight Number'),
+            , help='Inbound Flight Number')
         'ob_ap_dep_id':fields.many2one('touroperation.airport'
             , 'Departure Airport Outbound'
-            , help='Select outbound departure airport'),
+            , help='Select outbound departure airport')
         'ob_ap_arr_id':fields.many2one('touroperation.airport'
-            , 'Arrival Airport Outbound'
-            , help='Select arrival airport outbound'),
-        'ob_time_dep':fields.datetime('Departure Outbound Time'),
-        'ob_time_arr':fields.datetime('Arrival Outbound Time'),
+            , 'Arrival Airport Outbound', help='Select arrival airport outbound')
+        'ob_time_dep':fields.datetime('Departure Outbound Time')
+        'ob_time_arr':fields.datetime('Arrival Outbound Time')
         'ob_airline_id':fields.many2one('touroperation.airline'
             , 'Departure Airline Outbound'
-            , help='Select departure outbound airline'),
+            , help='Select departure outbound airline')
         'ob_flight_no':fields.char('Outbound Flight Number'
-            , help='outbound Flight Number'),
+            , help='outbound Flight Number')
+        'departure_flight':fields.char('Departure Flight', 255
+            , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)'),
+        'arrival_from_airport_id':fields.many2one('touroperation.airport',
+            'Arrival Airport From', help='Arrival airport From'),
+        'arrival_to_airport_id':fields.many2one('touroperation.airport',
+            'Arrival Airport To', help='Arrival airport destination'),
+        'departure_from_airport_id':fields.many2one('touroperation.airport',
+            'Departure Airport From', help='Departure Airport From'),
+        'departure_to_airport_id':fields.many2one('touroperation.airport',
+            'Departure Airport To', help='Departure airport destination'),
+        'flight_number':fields.char('Flight Number', 100, help='Flight number'),
+        'departure_time':fields.datetime('Departure Time', help='Set departure time'),
+        'arrival_time':fields.datetime('Arrival Time', help='Set arrival time'),
+        'id_no':fields.char('Identification Number', 100, help='Identification Number'),
         'arrange_ticket':fields.boolean('Arrange Ticket?', help='Arrange passenger ticket?'),
         'arrange_migration_card':fields.boolean('Arrange Migration Card?',
             help='Arrange passenger migration card?'),
-        'observations':fields.text('Observations', help='Observations'),
-        'pax_gender':fields.related('pax_id'
-                , 'gender', type='selection', readonly=True
-                , selection=GENDER_LIST
-                , string='Gender', help='Gender of passenger'),
-        'pax_nationality':fields.related('pax_id'
-                , 'nationality_id'
-                , type='many2one', relation="res.country"
-                , string='Nationality', store=False, readonly=True
-                , help='Nationality of passenger'),
-        'pax_alle_med':fields.related('pax_id'
-                , 'allergies_medical', 'Allergies / Medical Conditions'
-                , help='Passenger Allergies - Medical conditions'),
+
+
+
+
+
+
+
         }
 
 

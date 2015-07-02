@@ -43,6 +43,7 @@ ship cruises
         'security/res_groups.xml',
         'security/ir.model.access.csv',
         'security/ir_rules.xml',
+        'report/cruiseship.xml'
     ],
     'js': [
     ],

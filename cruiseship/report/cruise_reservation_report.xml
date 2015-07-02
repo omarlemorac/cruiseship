@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <report id="passenger_list_report"
+            model="cruise.departure"
+            name="cruise.passenger_list"
+            rml="cruiseship/report/passenger_list.rml"
+            header="False"
+            string="Passenger List"
+            />
+    </data>
+</openerp>

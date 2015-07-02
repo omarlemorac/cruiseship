@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<document filename="test.pdf">
+<!--    PAGINA-->
+  <template pageSize="(297mm,210mm)" title="Test" author="Martin Simon" allowSplitting="20" showBoundary="1">
+<!--  ZONA IMPRIMIBLE-->
+    <pageTemplate id="first">
+      <frame id="first" x1="5mm" y1="190mm" width="239mm" height="17mm"/>
+      <frame id="second" x1="5mm" y1="32mm" width="280mm" height="150mm"/>
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <blockTableStyle id="Standard_Outline">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+		<blockTableStyle id="temp001">
+			<blockAlignment value="LEFT"/>
+			<blockFont name="Helvetica-Oblique"/>
+			<lineStyle kind="GRID" colorName="black"/>
+			<lineStyle kind="OUTLINE" colorName="black" thickness="2"/>
+<!--			<blockBackground colorName="pink" start="0,0" stop="-1,0"/>-->
+<!--			<blockBackground colorName="yellow" start="0,0" stop="-1,0"/>-->
+		</blockTableStyle>
+		<blockTableStyle id="temp002">
+			<blockAlignment value="LEFT"/>
+			<blockFont name="Helvetica-Oblique"/>
+			<lineStyle kind="GRID" colorName="black"/>
+			<lineStyle kind="OUTLINE" colorName="black" thickness="2"/>
+			<blockBackground colorName="pink" start="0,0" stop="-1,0"/>
+<!--			<blockBackground colorName="yellow" start="0,0" stop="-1,0"/>-->
+		</blockTableStyle>
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+    <paraStyle name="ESTILO1" fontName="Helvetica" fontSize="14.0" leading="18"/>
+    <paraStyle name="ESTILO2" fontName="Helvetica" fontSize="11.0" leading="18"/>
+    <images/>
+  </stylesheet>
+<!--  ZONA ITERABLE-->
+  <story>
+    <para style="ESTILO1">
+      Lista de pasajeros
+    </para>
+    <nextFrame />
+    [[repeatIn(objects,'departure')]]
+    <para style="ESTILO1">
+      [[departure.name]]
+    </para>
+
+    
+		<blockTable colWidths="280mm" style="temp002">
+			<tr>
+				<td><para style="ESTILO1">Passengers</para></td>
+			</tr>
+		</blockTable>
+
+    <!--
+		<blockTable colWidths="100mm,180mm" style="temp001">
+			<tr>[[repeatIn(departure.departure_cabin_line_ids,'cabin_line')]]
+				<td><para style="ESTILO1">[[cabin_line.cabin_id.name]]</para></td>
+				<td><para style="ESTILO2">[[cabin_line.adult]]</para></td>
+			</tr>
+		</blockTable>
+    -->
+    <section>
+    <para style="ESTILO1">[[repeatIn(departure.departure_cabin_line_ids,'cabin_line')]]
+      [[cabin_line.cabin_id.name]]
+    </para>
+    <blockTable colWidths="100mm,90mm,90mm" style="temp001" >
+      <tr>[[repeatIn(cabin_line.cabin_pax_line_ids,'pax_line')]]
+          <td><para style="ESTILO2">Hola</para></td>
+          <td><para style="ESTILO2">Mundo</para></td>
+          <td><para style="ESTILO2">Cruel</para></td>
+      </tr>
+    </blockTable>
+    </section>
+    <!--
+		<blockTable colWidths="200mm,40mm,40mm" style="temp001">
+			<tr>[[repeatIn(departure.departure_cabin_line_ids.cabin_pax_line_ids,'pax_line')]]
+                <td><para>[[pax_line.id_no.name]]</para></td>
+                <td><para>[[pax_line.ib_flight_no]]</para></td>
+                <td><para>[[pax_line.ob_flight_no]]</para></td>
+              </tr>
+		</blockTable>
+    -->
+    <!--
+    <blockTable colWidths="100mm,90mm,90mm" style="temp001" >
+      <tr>[[repeatIn(cabin_line.cabin_pax_line_ids,'pax_line')]]
+          <td><para style="ESTILO2">[[pax_line.ib_flight_no]]</para></td>
+          <td><para style="ESTILO2">[[pax_line.ob_flight_no]]</para></td>
+          <td><para style="ESTILO2">[[pax_line.id_no]]</para></td>
+      </tr>
+    </blockTable>
+    --> 
+
+  </story>
+</document>

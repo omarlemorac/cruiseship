@@ -234,6 +234,9 @@
                                             nolabel="1">
                                             <tree>
                                               <field name="pax_id" />
+                                              <field name="pax_gender" />    
+                                              <field name="pax_nationality" />    
+                                              <field name="id_no" />    
                                             </tree>
                                             <form version="7.0">
                                               <div class="oe_title">
@@ -244,29 +247,38 @@
                                                   <field name="pax_id"/>
                                                 </h1>
                                                 <div class="oe_edit_only">
-                                                  <label for="ni" string="Identification Number"/>
+                                                  <label for="id_no" string="Identification Number"/>
                                                 </div>
                                                 <h2>
-                                                  <field name="ni" />
+                                                  <field name="id_no" />
                                                 </h2>
                                               </div>
-                                              <group colspan="2">
-                                                <field name="departure_from_airport_id" />
-                                                <field name="departure_to_airport_id" />
-                                                <field name="departure_time" />
-                                              </group>
-                                              <group colspan="2">
-                                                <field name="arrival_from_airport_id" />
-                                                <field name="arrival_to_airport_id" />
-                                                <field name="arrival_time" />
-                                                <field name="flight_number" />
-                                              </group>
-                                                <label for="arrange_ticket" string="Arrange Ticket" />
-                                                <field name="arrange_ticket" />
-                                                <label for="arrange_migration_card" string="Arrange Migration Card" />
-                                                <field name="arrange_migration_card" />
                                               <group>
+                                                <field name="ib_ap_dep_id" />    
+                                                <field name="ib_ap_arr_id" />    
+                                                <field name="ib_time_dep" />    
+                                                <field name="ib_time_arr" />    
+                                                <field name="ib_airline_id" />    
+                                                <field name="ib_flight_no" />    
                                               </group>
+                                              <group>
+                                                <field name="ob_ap_dep_id" />    
+                                                <field name="ob_ap_arr_id" />    
+                                                <field name="ob_time_dep" />    
+                                                <field name="ob_time_arr" />    
+                                                <field name="ob_airline_id" />    
+                                                <field name="ob_flight_no" />    
+                                              </group>
+                                              <label for="arrange_ticket" string="Arrange Ticket" />
+                                              <field name="arrange_ticket" />
+                                              <label for="arrange_migration_card" string="Arrange Migration Card" />
+                                              <field name="arrange_migration_card" />
+                                              <notebook>
+                                                <page string="Observations">
+                                                  <field name="observations" 
+                                                    nolabel="1"/>
+                                                </page>
+                                              </notebook>
                                             </form>
                                           </field>
                                         </group>
