@@ -168,7 +168,8 @@ class departure_cabin_line(osv.Model):
 
     _columns = {
         'cabin_id':fields.many2one('cruise.cabin', 'Cabin'
-           , help='Add a cabin for departure', required=True),
+           , help='Add a cabin for departure', domain=[('iscabin', '=', True)]
+           , required=True),
         'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin'
             , help='Add a cabin for departure'
             , ondelete='cascade'),
