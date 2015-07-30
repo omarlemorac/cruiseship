@@ -84,6 +84,10 @@ class cruise_cabin(osv.Model):
         'type':'service',
     }
 
+    def create(self, cr, uid, values, context=None):
+        values['iscabin'] = True
+        return super(cruise_cabin, self).create(cr,uid,values)
+
 class cabin_pax_line(osv.Model):
 
     '''Pax reserving cabin'''
@@ -317,17 +321,27 @@ class departure_cabin_line(osv.Model):
                 , ['cabin_id'])
     ]
 
+    def _compute_price_subtotal(self, values):
+        return  float(values['adult']) * float(values['adult_price_unit']) + \
+                float(values['young']) * float(values['young_price_unit']) + \
+                float(values['children']) * float(values['child_price_unit'])
+
     def create(self, cr, uid, values, context=None):
-        print values
         values['order_id'] = values['folio_id']
+        print self._compute_price_subtotal(values)
+        values['price_unit'] = self._compute_price_subtotal(values)
+        values['price_subtotal'] = self._compute_price_subtotal(values)
         cabin_obj = self.pool.get('product.product')
         departure_obj = self.pool.get('cruise.departure')
         cabin =  cabin_obj.browse(cr, uid, [values['cabin_id']])[0]
         departure = departure_obj.browse(cr,uid,[values['departure_id']])[0]
-        dadult = values['adult'] and "{} adult(s) ".format(values['adult']) or ""
-        dchildren = values['children'] and "{} child(ren) ".format(values['children']) or ""
-        dyoung = values['young'] and "{} young ".format(values['young']) or ""
-        description = "{} arrival:{} departure:{}. {} {} {}".format(cabin.name, departure.arrival_date,
+        dadult = values['adult'] and \
+          "{} adult(s) {:.2f}".format(values['adult'], float(values['adult_price_unit'])) or ""
+        dchildren = values['children'] and \
+          "{} child(ren) {:.2f}".format(values['children'], float(values['child_price_unit'])) or ""
+        dyoung = values['young'] and \
+          "{} young {:.2f}".format(values['young'], float(values['young_price_unit'])) or ""
+        description = "{} {}/{}. {} {} {}".format(cabin.name, departure.arrival_date,
                 departure.departure_date, dadult, dchildren, dyoung)
         values['name'] = description
         _id = super(departure_cabin_line, self).create(cr,uid,values)
