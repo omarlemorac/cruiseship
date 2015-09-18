@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
+      <!-- Old
         <report id="passenger_list_report"
             model="cruise.departure"
             name="cruise.passenger_list"
@@ -8,5 +9,13 @@
             header="False"
             string="Passenger List"
             />
+      -->
+      <report id="passenger_list_report"
+          model="cruise.departure"
+          name="cruise.passenger_list"
+          rml="cruiseship/report/passenger_list.mako"
+          webkit_header="base_headers_webkit.base_reports_portrait_header"
+          string="Passenger List"
+          report_type="webkit" />
     </data>
 </openerp>

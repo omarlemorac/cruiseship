@@ -174,8 +174,8 @@ class departure_cabin_line(osv.Model):
         'cabin_id':fields.many2one('cruise.cabin', 'Cabin'
            , help='Add a cabin for departure', domain=[('iscabin', '=', True)]
            , required=True),
-        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Cabin'
-            , help='Add a cabin for departure'
+        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Tour Folio Line'
+            , help='Tour folio line added in source folio'
             , ondelete='cascade'),
 #        'folio_id':fields.many2one('tour.folio', 'Folio'
 #        , help='Select asociated Folio',required=True),
@@ -328,7 +328,6 @@ class departure_cabin_line(osv.Model):
 
     def create(self, cr, uid, values, context=None):
         values['order_id'] = values['folio_id']
-        print self._compute_price_subtotal(values)
         values['price_unit'] = self._compute_price_subtotal(values)
         values['price_subtotal'] = self._compute_price_subtotal(values)
         cabin_obj = self.pool.get('product.product')

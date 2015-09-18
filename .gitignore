@@ -4,6 +4,7 @@
 **.swp
 *.txt
 **.txt
+*.DS_Store
 a
 b
 c
