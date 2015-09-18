@@ -42,6 +42,10 @@
   </style>
 </head>
 <body>
+  <%
+    def carriage_returns(text):
+        return text.replace('\n', '<br />')
+    %>
   %for departure in objects:
   <% setLang(user.lang) %>
   <table class="list_sale_table">
@@ -70,8 +74,8 @@
           <td>${pax_line.pax_id.gender}</td>
           <td>${pax_line.pax_id.nationality_id.name}</td>
           <td>${pax_line.pax_id.date_of_birth}</td>
-          <td>${pax_line.pax_id.dietary_requirements}</td>
-          <td>${pax_line.pax_id.allergies_medical}</td>
+          <td>${pax_line.pax_id.dietary_requirements and pax_line.pax_id.dietary_requirements or '----'}</td>
+          <td>${pax_line.pax_id.allergies_medical and pax_line.pax_id.allergies_medical or '----'}</td>
           <td>${cabin_line.cabin_id.name}</td>
           <td style="font-size:8px;">${pax_line.ib_ap_dep_id.name}
             ${formatLang(pax_line.ib_time_dep, date_time=True)} <br /> ${pax_line.ib_ap_arr_id.name}
@@ -80,6 +84,11 @@
             ${formatLang(pax_line.ob_time_dep, date_time=True)} <br /> ${pax_line.ob_ap_arr_id.name}
             ${formatLang(pax_line.ob_time_arr, date_time=True)} <br /> ${pax_line.ob_airline_id.name}/${pax_line.ob_flight_no}</td>
         </tr>
+        %if pax_line.observations:
+        <tr>
+          <td colspan="10">${pax_line.observations | carriage_returns}</td>
+        </tr>
+        %endif
         %endfor
       %endfor
   </table>
