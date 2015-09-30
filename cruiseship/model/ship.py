@@ -177,8 +177,6 @@ class departure_cabin_line(osv.Model):
         'tour_folio_line_id':fields.many2one('tour_folio.line', 'Tour Folio Line'
             , help='Tour folio line added in source folio'
             , ondelete='cascade'),
-#        'folio_id':fields.many2one('tour.folio', 'Folio'
-#        , help='Select asociated Folio',required=True),
         'departure_id':fields.many2one('cruise.departure', 'Departure'
             , help='Departure'),
         'ship_id':fields.related('cabin_id'

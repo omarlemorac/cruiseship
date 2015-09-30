@@ -36,7 +36,7 @@ ship cruises
     'website': 'http://www.accioma.com',
     'images' : [],
     'depends' : [
-        "sale","tour_operation",
+        "sale","tour_operation","report_webkit", "partner_firstname",
     ],
     'data': [
         'view/cruiseship_view.xml',

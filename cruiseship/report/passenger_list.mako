@@ -45,8 +45,12 @@
   <%
     def carriage_returns(text):
         return text.replace('\n', '<br />')
+    def gender(g):
+        return {'m':'Masculino', 'f':'Femenino'}[g]
     %>
   %for departure in objects:
+  <h1>Lista de pasajeros</h1>
+  <h3>${departure.name}</h3>
   <% setLang(user.lang) %>
   <table class="list_sale_table">
       <tr>
@@ -71,7 +75,7 @@
           <td>${pax_line.arrange_ticket and 'Si' or 'No'}</td>
           <td>${pax_line.arrange_migration_card and 'Si' or 'No'}</td>
           <td>${pax_line.id_no}</td>
-          <td>${pax_line.pax_id.gender}</td>
+          <td>${pax_line.pax_id.gender | gender}</td>
           <td>${pax_line.pax_id.nationality_id.name}</td>
           <td>${pax_line.pax_id.date_of_birth}</td>
           <td>${pax_line.pax_id.dietary_requirements and pax_line.pax_id.dietary_requirements or '----'}</td>
