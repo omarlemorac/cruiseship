@@ -256,7 +256,7 @@
                                               <group>
                                                 <field name="ib_ap_dep_id" />    
                                                 <field name="ib_ap_arr_id" />    
-                                                <field name="ib_time_dep" />    
+                                                <field name="ib_time_dep" on_change='onchange_ib_time_dep(ib_time_dep)' />    
                                                 <field name="ib_time_arr" />    
                                                 <field name="ib_airline_id" />    
                                                 <field name="ib_flight_no" />    
@@ -264,7 +264,7 @@
                                               <group>
                                                 <field name="ob_ap_dep_id" />    
                                                 <field name="ob_ap_arr_id" />    
-                                                <field name="ob_time_dep" />    
+                                                <field name="ob_time_dep" on_change='onchange_ob_time_dep(ob_time_dep)'/>    
                                                 <field name="ob_time_arr" />    
                                                 <field name="ob_airline_id" />    
                                                 <field name="ob_flight_no" />    

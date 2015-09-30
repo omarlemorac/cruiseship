@@ -164,6 +164,16 @@ class cabin_pax_line(osv.Model):
         }
 
 
+    def onchange_ib_time_dep(self, cr, user, ids, ib_time_dep):
+        res = {}
+        res['value'] = {'ib_time_arr' : ib_time_dep}
+        return res
+
+    def onchange_ob_time_dep(self, cr, user, ids, ob_time_dep):
+        res = {}
+        res['value'] = {'ob_time_arr' : ob_time_dep}
+        return res
+
 class departure_cabin_line(osv.Model):
     _name = 'departure_cabin.line'
     _description = 'Line for cabin in departure'
