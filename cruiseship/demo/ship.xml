@@ -20,63 +20,63 @@
 						Cabin type
 		==================================================== -->
         <record model="cruise.cabin.type" id="cruise_ship_ct_0">
-			<field name="parent_id"  ref="null" />
+			<field name="parent_id"  ref="product.product_category_all" />
             <field name="name" >All cabins</field>
         </record>
         <record model="cruise.cabin.type" id="cruise_ship_ct_1">
             <field name="name" >Double bunk bed</field>
-			<field name="parent_id" model="product.category" search="[('iscabintype','=',True)]" ref="cruise_ship_ct_0"/>
+			<field name="parent_id" ref="cruise_ship_ct_0"/>
         </record>
         <record model="cruise.cabin.type" id="cruise_ship_ct_2">
             <field name="name" >Matrimonial</field>
-			<field name="parent_id" model="product.category" search="[('iscabintype','=',True)]" ref="cruise_ship_ct_0"/>
+			<field name="parent_id" ref="cruise_ship_ct_0"/>
         </record>
         <!--====================================================
 						Cabin
 		==================================================== -->
-        <record model="cruise.cabin" id="cruise_ship_cabin_s1_demo">
+        <record model="product.product" id="cruise_ship_cabin_s1_demo">
           <field name="name" >Samba/Cabin 1</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s2_demo">
+        <record model="product.product" id="cruise_ship_cabin_s2_demo">
           <field name="name" >Samba/Cabin 2</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s3_demo">
+        <record model="product.product" id="cruise_ship_cabin_s3_demo">
           <field name="name" >Samba/Cabin 3</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s4_demo">
+        <record model="product.product" id="cruise_ship_cabin_s4_demo">
           <field name="name" >Samba/Cabin 4</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s5_demo">
+        <record model="product.product" id="cruise_ship_cabin_s5_demo">
           <field name="name" >Samba/Cabin 5</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s6_demo">
+        <record model="product.product" id="cruise_ship_cabin_s6_demo">
           <field name="name" >Samba/Cabin 6</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s7_demo">
+        <record model="product.product" id="cruise_ship_cabin_s7_demo">
           <field name="name" >Samba/Cabin 7</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
@@ -87,8 +87,8 @@
 						Departures
         ==================================================== -->
         <record model="cruise.departure" id="cruise_departure_d1_demo">
-            <field name="name" >Samba/2015-07-01</field>
-            <field name="departure_date" >2015-07-01</field>
+            <field name="name" >Samba/2020-01-01</field>
+            <field name="departure_date" >2020-01-01</field>
             <field name="arrival_date" >2015-01-08</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="itinerary">SE</field>
@@ -97,9 +97,9 @@
             <field name="young_price_normal">3124.54</field>
         </record>
         <record model="cruise.departure" id="cruise_departure_d2_demo">
-            <field name="name" >Samba/2015-07-08</field>
-            <field name="departure_date" >2015-07-08</field>
-            <field name="arrival_date" >2015-07-15</field>
+            <field name="name" >Samba/2020-01-08</field>
+            <field name="departure_date" >2020-01-08</field>
+            <field name="arrival_date" >2020-01-15</field>
             <field name="ship_id" ref="cruise_ship_samba_demo" />
             <field name="itinerary">NW</field>
             <field name="child_price_normal">2832.45</field>
@@ -107,9 +107,9 @@
             <field name="young_price_normal">3000.54</field>
         </record>
         <record model="cruise.departure" id="cruise_departure_d3_demo">
-            <field name="name" >Beagle/2015-07-13</field>
-            <field name="departure_date" >2015-07-15</field>
-            <field name="arrival_date" >2015-07-22</field>
+            <field name="name" >Beagle/2020-01-13</field>
+            <field name="departure_date" >2020-01-15</field>
+            <field name="arrival_date" >2020-01-22</field>
             <field name="ship_id" ref="cruise_ship_beagle_demo" />
             <field name="itinerary">NW</field>
             <field name="child_price_normal">2832.45</field>
@@ -117,9 +117,9 @@
             <field name="young_price_normal">3000.54</field>
         </record>
         <record model="cruise.departure" id="cruise_departure_d4_demo">
-            <field name="name" >Beagle/2015-07-01</field>
-            <field name="departure_date" >2015-07-08</field>
-            <field name="arrival_date" >2015-07-15</field>
+            <field name="name" >Beagle/2020-01-01</field>
+            <field name="departure_date" >2020-01-08</field>
+            <field name="arrival_date" >2020-01-15</field>
             <field name="ship_id" ref="cruise_ship_beagle_demo" />
             <field name="itinerary">SE</field>
             <field name="child_price_normal">2832.45</field>

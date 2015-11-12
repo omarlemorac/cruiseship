@@ -19,228 +19,160 @@
 #
 ##############################################################################
 
-from osv import osv, fields
+from openerp import api, exceptions, fields, models
 import openerp.addons.decimal_precision as dp
 import datetime
 
 GENDER_LIST = [('m', 'Male'), ('f', 'Female')]
-class cruise_ship(osv.Model):
+
+class cruise_ship(models.Model):
     _name = "cruise.ship"
     _description = "Ship"
     _inherit = ['mail.thread']
-    _columns = {
-        'name': fields.char('Ship Name', size=64, required=True, select=True),
-        'sequence' : fields.integer('Sequence', size=64),
-        'observations' : fields.html('Observations'),
-        'max_pax':fields.integer('Maximum capacity'
-            , help='Maximum passenger number allowed in law'),
-        'cabin_ids':fields.one2many('cruise.cabin', 'ship_id', 'Cabins'
-            , help='Add cabins to this ship'),
-        'check_max_capacity':fields.boolean('Check maximum capacity'
-            , help='Check maximum capacity in reserving'),
-        }
-    _defaults={
-        'check_max_capacity':False,
-            }
-
-class product_category(osv.osv):
-    _inherit = "product.category"
-    _columns = {
-        'iscabintype':fields.boolean('Is Cabin Type'),
-    }
-class product_product(osv.osv):
-    _inherit = "product.product"
-    _columns = {
-        'iscabin':fields.boolean('Is Cabin'),
-    }
-
-class cabin_type(osv.Model):
-    _name='cruise.cabin.type'
-    _inherits = {'product.category':'cat_id'}
-    _columns = {
-        'cat_id':fields.many2one('product.category', 'category', required=True, select=True, ondelete='cascade'),
-            }
+    name = fields.Char('Ship Name', size=64, required=True, select=True)
+    sequence = fields.Integer('Sequence', size=64)
+    observations = fields.Html('Observations')
+    max_pax = fields.Integer('Maximum capacity'
+                             , help='Maximum passenger number allowed in law')
+    cabin_ids = fields.One2many('product.product', 'ship_id', 'Cabins'
+                                , help='Add cabins to this ship')
+    check_max_capacity = fields.Boolean('Check maximum capacity'
+                                        , help='Check maximum capacity in reserving', default=False)
 
 
-class cruise_cabin(osv.Model):
-    _name = 'cruise.cabin'
-    _description = 'Ship cabin'
-    _inherit = 'product.product'
-    _columns = {
-        #'name':fields.char('Name', 255, help='Name', required=True),
-        'ship_id':fields.many2one('cruise.ship', 'Ship'),
-        'cabin_type_id':fields.many2one('cruise.cabin.type', 'Cruise cabin type'
-            , help='Cruise cabin type'),
-        'max_adult':fields.integer('Max Adult'),
-        'max_child':fields.integer('Max Child'),
-        'departure_ids':fields.many2many('cruise.departure'
-                , 'departure_cabin_rel'
-                , 'departure_id'
-                , 'cabin_id'
-                , 'Departures'
-                , help='Cabins in departure'),
-        }
-    _defaults = {
-        'type':'service',
-    }
-
-    def create(self, cr, uid, values, context=None):
-        values['iscabin'] = True
-        return super(cruise_cabin, self).create(cr,uid,values)
-
-class cabin_pax_line(osv.Model):
+class cabin_pax_line(models.Model):
 
     '''Pax reserving cabin'''
 
     _name = 'cabin.pax.line'
-    _columns = {
-        'pax_id':fields.many2one('res.partner', 'Passenger', required=True
-            , help='Pax using cabin',
-            domain="[('is_pax','=', True)]"),
-        'id_no':fields.char('Identification Number', 100, required=True
-                , help='Identification Number'),
-        'age_ref':fields.selection([
-            ('adult','Adult'),
-            ('young','Young'),
-            ('child','Child'),
-            ]
-            , string='Age reference'
-            , help='Age reference'),
-        'bed_space_adult':fields.integer('Bed Space Adult', help='Bed space adult'),
-        'bed_space_child':fields.integer('Bed Space Child', help='Bed space child'),
-        'departure_cabin_line_id':fields.many2one('departure_cabin.line'
-            , 'Departure Cabin Line'
-            , help='Departure Cabin Line'),
-        'celebration':fields.char('Celebration', 255
-            , help='Are you celebrating any special event during your trip?'),
-        'accomodation':fields.char('Accomodation', 255
-            , help='Hotel accomodation in Ecuador'),
-        'tour_company':fields.char('Tour Company', 255
-            , help='Tour company providing services in Ecuador'),
-        'arriving_flight':fields.char('Arriving Flight', 255
-            , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)'),
-        'ib_ap_dep_id':fields.many2one('touroperation.airport'
-            , 'Departure Airport Inbound'
-            , help='Select departure airport inbound'),
-        'ib_ap_arr_id':fields.many2one('touroperation.airport'
-            , 'Arrival Airport Inbound'
-            , help='Select arrival airport inbound'),
-        'ib_time_dep':fields.datetime('Departure Inbound Time'),
-        'ib_time_arr':fields.datetime('Arrival Inbound Time'),
-        'ib_airline_id':fields.many2one('touroperation.airline'
-            , 'Departure Airline Inbound'
-            , help='Select inbound departure airline'),
-        'ib_flight_no':fields.char('Inbound Flight Number'
-            , help='Inbound Flight Number'),
-        'ob_ap_dep_id':fields.many2one('touroperation.airport'
-            , 'Departure Airport Outbound'
-            , help='Select outbound departure airport'),
-        'ob_ap_arr_id':fields.many2one('touroperation.airport'
-            , 'Arrival Airport Outbound'
-            , help='Select arrival airport outbound'),
-        'ob_time_dep':fields.datetime('Departure Outbound Time'),
-        'ob_time_arr':fields.datetime('Arrival Outbound Time'),
-        'ob_airline_id':fields.many2one('touroperation.airline'
-            , 'Departure Airline Outbound'
-            , help='Select departure outbound airline'),
-        'ob_flight_no':fields.char('Outbound Flight Number'
-            , help='outbound Flight Number'),
-        'arrange_ticket':fields.boolean('Arrange Ticket?', help='Arrange passenger ticket?'),
-        'arrange_migration_card':fields.boolean('Arrange Migration Card?',
-            help='Arrange passenger migration card?'),
-        'observations':fields.text('Observations', help='Observations'),
-        'pax_gender':fields.related('pax_id'
-                , 'gender', type='selection', readonly=True
-                , selection=GENDER_LIST
-                , string='Gender', help='Gender of passenger'),
-        'pax_nationality':fields.related('pax_id'
-                , 'nationality_id'
-                , type='many2one', relation="res.country"
-                , string='Nationality', store=False, readonly=True
-                , help='Nationality of passenger'),
-        'pax_alle_med':fields.related('pax_id'
-                , 'allergies_medical', 'Allergies / Medical Conditions'
-                , help='Passenger Allergies - Medical conditions'),
-        }
+    pax_id = fields.Many2one('res.partner', 'Passenger', required=True
+        , help='Pax using cabin',
+        domain="[('is_pax','=', True)]")
+    id_no = fields.Char('Identification Number', required=True
+            , help='Identification Number')
+    age_ref = fields.Selection([
+        ('adult', 'Adult'),
+        ('young', 'Young'),
+        ('child', 'Child'),
+        ]
+        , string='Age reference'
+        , help='Age reference')
+    bed_space_adult = fields.Integer('Bed Space Adult', help='Bed space adult')
+    bed_space_child = fields.Integer('Bed Space Child', help='Bed space child')
+    departure_cabin_line_id = fields.Many2one('departure_cabin.line'
+        , 'Departure Cabin Line'
+        , help='Departure Cabin Line')
+    celebration = fields.Char('Celebration'
+        , help='Are you celebrating any special event during your trip?')
+    accomodation = fields.Char('Accomodation'
+        , help='Hotel accomodation in Ecuador')
+    tour_company = fields.Char('Tour Company'
+        , help='Tour company providing services in Ecuador')
+    arriving_flight = fields.Char('Arriving Flight'
+        , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)')
+    ib_ap_dep_id = fields.Many2one('touroperation.airport'
+        , 'Departure Airport Inbound'
+        , help='Select departure airport inbound')
+    ib_ap_arr_id = fields.Many2one('touroperation.airport'
+        , 'Arrival Airport Inbound'
+        , help='Select arrival airport inbound')
+    ib_time_dep = fields.Datetime('Departure Inbound Time')
+    ib_time_arr = fields.Datetime('Arrival Inbound Time')
+    ib_airline_id = fields.Many2one('touroperation.airline'
+        , 'Departure Airline Inbound'
+        , help='Select inbound departure airline')
+    ib_flight_no = fields.Char('Inbound Flight Number'
+        , help='Inbound Flight Number')
+    ob_ap_dep_id = fields.Many2one('touroperation.airport'
+        , 'Departure Airport Outbound'
+        , help='Select outbound departure airport')
+    ob_ap_arr_id = fields.Many2one('touroperation.airport'
+        , 'Arrival Airport Outbound'
+        , help='Select arrival airport outbound')
+    ob_time_dep = fields.Datetime('Departure Outbound Time')
+    ob_time_arr = fields.Datetime('Arrival Outbound Time')
+    ob_airline_id = fields.Many2one('touroperation.airline'
+        , 'Departure Airline Outbound'
+        , help='Select departure outbound airline')
+    ob_flight_no = fields.Char('Outbound Flight Number'
+        , help='outbound Flight Number')
+    arrange_ticket = fields.Boolean('Arrange Ticket?', help='Arrange passenger ticket?')
+    arrange_migration_card = fields.Boolean('Arrange Migration Card?',
+        help='Arrange passenger migration card?')
+    observations = fields.Text('Observations', help='Observations')
+    pax_gender = fields.Selection(string='Gender', related = 'pax_id.gender',
+                                  help = 'Gender of passenger', readonly = True)
+    pax_nationality = fields.Char(string='Nationality', related = 'pax_id.nationality_id.name',
+                                      help='Nationality of passenger', readonly = True)
+    pax_alle_med = fields.Text(string = 'Allergies / Medical Conditions', related = 'pax_id.allergies_medical',
+                               help='Passenger Allergies - Medical conditions')
 
 
-    def onchange_ib_time_dep(self, cr, user, ids, ib_time_dep):
+    @api.onchange('ib_time_dep')
+    def onchange_ib_time_dep(self):
         res = {}
-        res['value'] = {'ib_time_arr' : ib_time_dep}
+        res['value'] = {'ib_time_arr' : self.ib_time_dep}
         return res
 
-    def onchange_ob_time_dep(self, cr, user, ids, ob_time_dep):
+    @api.onchange('ob_time_dep')
+    def onchange_ob_time_dep(self):
         res = {}
-        res['value'] = {'ob_time_arr' : ob_time_dep}
+        res['value'] = {'ob_time_arr' : self.ob_time_dep}
         return res
 
-class departure_cabin_line(osv.Model):
+class departure_cabin_line(models.Model):
     _name = 'departure_cabin.line'
     _description = 'Line for cabin in departure'
     _inherits = {'tour_folio.line':'tour_folio_line_id'}
 
+    cabin_id = fields.Many2one('product.product', 'Cabin'
+       , help='Add a cabin for departure', domain=[('iscabin', '=', True)]
+       , required=True)
+    tour_folio_line_id = fields.Many2one('tour_folio.line', 'Tour Folio Line'
+        , help='Tour folio line added in source folio'
+        , ondelete='cascade', required = True)
+    departure_id = fields.Many2one('cruise.departure', 'Departure'
+        , help='Departure')
+    ship_id = fields.Many2one(string='Ship', related='cabin_id.ship_id'
+        , readonly=True
+        , help='Ship related to cabin ')
+    state = fields.Selection([
+           ('draft', 'Draft')
+          ,('wlist', 'Waiting list')
+          ,('request', 'Request')
+          ,('confirm', 'Confirm')
+          ,('cancel', 'Cancel')
+          ]
+        , 'State', readonly=True, default='draft')
+    adult = fields.Integer('Bed Space Adult', help='Bed space adult')
+    children = fields.Integer('Bed Space Children', help='Bed space child')
+    young = fields.Integer('Bed Space Young', help='Bed space child')
+    adult_price_unit = fields.Float('Adult price', required=True
+        ,digits_compute=dp.get_precision('Product Price')
+        ,help='fields help')
+    young_price_unit = fields.Float('Young price', required=True
+        ,digits_compute=dp.get_precision('Product Price')
+        ,help='fields help')
+    child_price_unit = fields.Float('Child price', required=True
+        ,digits_compute=dp.get_precision('Product Price')
+        ,help='fields help')
+    sharing = fields.Selection([
+        ('male_sharing', 'Male sharing'),
+        ('female_sharing', 'Female sharing'),
+        ('no_sharing', 'No sharing'),
+        ], string='Sharing type', required=True,
+        help='Select the sharing type for cabin/s')
+    confirm_date = fields.Date(relation='folio_id.payment_date'
+      , string='Confirm Date'
+      , help='Confirm Date')
+    partner_id = fields.Many2one(string='Customer', relation='res.partner'
+      , help='Customer')
+    user_id = fields.Many2one(string='Sales Person', relation='res.user'
+      , help='Customer')
+    cabin_pax_line_ids = fields.One2many('cabin.pax.line'
+        , 'departure_cabin_line_id', 'Passenger'
+        , help='Add passenger for this departure')
 
-    _columns = {
-        'cabin_id':fields.many2one('cruise.cabin', 'Cabin'
-           , help='Add a cabin for departure', domain=[('iscabin', '=', True)]
-           , required=True),
-        'tour_folio_line_id':fields.many2one('tour_folio.line', 'Tour Folio Line'
-            , help='Tour folio line added in source folio'
-            , ondelete='cascade'),
-        'departure_id':fields.many2one('cruise.departure', 'Departure'
-            , help='Departure'),
-        'ship_id':fields.related('cabin_id'
-            , 'ship_id'
-            , readonly=True
-            , type='many2one'
-            , relation='cruise.ship'
-            , string='Ship'
-            , help='Ship related to cabin '),
-        'state': fields.selection([
-               ('draft','Draft')
-              ,('wlist','Waiting list')
-              ,('request','Request')
-              ,('confirm','Confirm')
-              ,('cancel','Cancel')
-              ]
-            , 'State',readonly=True),
-        'adult':fields.integer('Bed Space Adult', help='Bed space adult'),
-        'children':fields.integer('Bed Space Children', help='Bed space child'),
-        'young':fields.integer('Bed Space Young', help='Bed space child'),
-        'adult_price_unit':fields.float('Adult price', required=True
-            ,digits_compute=dp.get_precision('Product Price')
-            ,help='fields help'),
-        'young_price_unit':fields.float('Young price', required=True
-            ,digits_compute=dp.get_precision('Product Price')
-            ,help='fields help'),
-        'child_price_unit':fields.float('Child price', required=True
-            ,digits_compute=dp.get_precision('Product Price')
-            ,help='fields help'),
-        'sharing':fields.selection([
-            ('male_sharing', 'Male sharing'),
-            ('female_sharing', 'Female sharing'),
-            ('no_sharing', 'No sharing'),
-            ], string='Sharing type', required=True,
-            help='Select the sharing type for cabin/s'),
-        'confirm_date':fields.related('folio_id'
-          , 'payment_date', type='date', string='Confirm Date'
-          , help='Confirm Date'),
-        'partner_id':fields.related('folio_id'
-          , 'partner_id', type='many2one', string='Customer',relation='res.partner'
-          , help='Customer'),
-        'user_id':fields.related('folio_id'
-          , 'user_id', type='many2one', string='Sales Person',relation='res.users'
-          , help='Customer'),
-        'cabin_pax_line_ids':fields.one2many('cabin.pax.line'
-            , 'departure_cabin_line_id', 'Passenger'
-            , help='Add passenger for this departure'),
-
-
-        }
-
-    _defaults = {
-            'state':lambda *a:'draft',
-    }
     def _check_cabin_departure(self, cr, uid, ids, context=None):
         cabin_line = self.browse(cr, uid, ids[0], context=context)
         if cabin_line.cabin_id.id not in [c.id for c in
@@ -248,15 +180,13 @@ class departure_cabin_line(osv.Model):
             return False
         return True
 
-    def action_request(self, cr, uid, ids, context=None):
-        if context is None:
-            context = {}
-        self.action_reqconf(cr, uid, ids, 'request', context)
+    @api.one
+    def action_request(self):
+        self.action_reqconf('request')
 
-    def action_reqconf(self, cr, uid, ids, target_state, context=None):
-        if context is None:
-            context = {}
-        cabin_line = self.browse(cr, uid, ids[0], context=context)
+    @api.one
+    def action_reqconf(self, target_state):
+        cabin_line = self.browse([0])
         cabin_id = cabin_line.cabin_id.id
         reserved = []
         if target_state == 'request':
@@ -272,7 +202,8 @@ class departure_cabin_line(osv.Model):
 
         #If cabin is already reserved in no_sharing state='wlist'
         if cabin_id in [r.id for r in reserved]:
-            return self.write(cr, uid, ids, {'state':'wlist'})
+            self.state = 'wlist'
+            return
 
         max_adult = cabin_line.cabin_id.max_adult
         sharing = cabin_line.sharing
@@ -290,9 +221,11 @@ class departure_cabin_line(osv.Model):
                         in cabin_line.departure_id.departure_cabin_line_ids
                         if r.state in ['confirm']]
             if cabin_id in [r.id for r in reserved]:
-                return self.write(cr, uid, ids, {'state':'wlist'})
+                self.state = 'wlist'
+                return
             else:
-                return self.write(cr, uid, ids, {'state':target_state})
+                self.state = target_state
+                return
         else: #Otherwise current reservation is male or female sharing
             #Cabin is reserved with diferent sharing
             reserved = [c.cabin_id.id for c
@@ -301,7 +234,8 @@ class departure_cabin_line(osv.Model):
                       and c.sharing != sharing
                       and c.cabin_id.id == cabin_id]
             if reserved:
-                return self.write(cr, uid, ids, {'state':'wlist'})
+                self.state = 'wlist'
+                return
 
             #Reserved same sharing
             res_adults = sum([c.adult for c
@@ -312,14 +246,15 @@ class departure_cabin_line(osv.Model):
                       ])
 
             if max_adult < res_adults + adult:
-                return self.write(cr, uid, ids, {'state':'wlist'})
+                self.state = 'wlist'
+                return
 
-        return self.write(cr, uid, ids, {'state':target_state})
+        self.state = 'wlist'
+        return
 
-    def action_confirm(self, cr, uid, ids, context=None):
-        if context is None:
-            context = {}
-        self.action_reqconf(cr, uid, ids, 'confirm', context)
+    @api.one
+    def action_confirm(self):
+        self.action_reqconf('confirm')
 
     def action_cancel(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {'state':'cancel'})
@@ -356,161 +291,132 @@ class departure_cabin_line(osv.Model):
         return _id
 
 
-class departure_ship_line(osv.Model):
+class departure_ship_line(models.Model):
 
     '''Ships on departure'''
 
     _name = 'departure.ship.line'
 
-    _columns = {
-        'ship_id':fields.many2one('cruise.ship', 'Ship', help='Add a ship for departure'),
-        'departure_id':fields.many2one('cruise.departure', 'Departure'
-            , help='Departure'),
-        'max_capacity':fields.related('ship_id'
-            , 'max_pax'
-            , readonly=True
-            , type='integer'
-            , string='Maximum Capacity'
-            , help='Maximum capacity of ship'),
-        }
+    ship_id = fields.Many2one('cruise.ship', 'Ship', help='Add a ship for departure')
+    departure_id = fields.Many2one('cruise.departure', 'Departure'
+        , help='Departure')
+    max_capacity = fields.Integer(relation='ship_id.max_pax'
+        , readonly=True
+        , string='Maximum Capacity'
+        , help='Maximum capacity of ship')
 
-
-class departure(osv.Model):
+class departure(models.Model):
     _name = 'cruise.departure'
     _description = 'Cruise Departure'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
     _order='departure_date'
 
-    def _availability(self, cr, uid, ids, field_name, arg, context=None):
-        if context==None:
-            context={}
-        res = {}
-        for dep in self.browse(cr, uid, ids, context):
-            av_tot = sum([c.max_adult for c in dep.cabin_ids])
-            res[dep.id] = {}
-            res[dep.id]['availability'] = av_tot
-            request_no_sharing=sum([l.cabin_id.max_adult for l in dep.departure_cabin_line_ids
-                if l.state == 'request' and l.sharing=='no_sharing'])
-            request_sharing=sum([l.adult + l.young
-                for l in dep.departure_cabin_line_ids
-                if l.state == 'request' and l.sharing!='no_sharing'])
-            res[dep.id]['request'] = request_no_sharing + request_sharing
-            confirm_no_sharing=sum([l.cabin_id.max_adult for l in dep.departure_cabin_line_ids
-                if l.state == 'confirm' and l.sharing=='no_sharing'])
-            confirm_sharing=sum([l.adult + l.young
-                for l in dep.departure_cabin_line_ids
-                if l.state == 'confirm' and l.sharing!='no_sharing'])
-            res[dep.id]['confirm'] = confirm_no_sharing + confirm_sharing
-            wlist_no_sharing=sum([l.cabin_id.max_adult for l in dep.departure_cabin_line_ids
-                if l.state == 'wlist' and l.sharing=='no_sharing'])
-            wlist_sharing=sum([l.adult + l.young
-                for l in dep.departure_cabin_line_ids
-                if l.state == 'wlist' and l.sharing!='no_sharing'])
-            res[dep.id]['wlist'] = wlist_no_sharing + wlist_sharing
-            res[dep.id]['available'] = av_tot - (request_no_sharing+
-                    request_sharing+confirm_no_sharing+confirm_sharing)
+    @api.one
+    @api.depends('cabin_ids', 'departure_cabin_line_ids')
+    def _availability(self):
+        self.availability = av_tot = sum([c.max_adult for c in self.cabin_ids])
+
+        request_no_sharing=sum([l.cabin_id.max_adult for l in self.departure_cabin_line_ids
+            if l.state == 'request' and l.sharing=='no_sharing'])
+        request_sharing=sum([l.adult + l.young
+            for l in self.departure_cabin_line_ids
+            if l.state == 'request' and l.sharing!='no_sharing'])
+        self.request = request_no_sharing + request_sharing
+        confirm_no_sharing=sum([l.cabin_id.max_adult for l in self.departure_cabin_line_ids
+            if l.state == 'confirm' and l.sharing=='no_sharing'])
+        confirm_sharing=sum([l.adult + l.young
+            for l in self.departure_cabin_line_ids
+            if l.state == 'confirm' and l.sharing!='no_sharing'])
+        self.confirm = confirm_no_sharing + confirm_sharing
+        wlist_no_sharing=sum([l.cabin_id.max_adult for l in self.departure_cabin_line_ids
+            if l.state == 'wlist' and l.sharing=='no_sharing'])
+        wlist_sharing=sum([l.adult + l.young
+            for l in self.departure_cabin_line_ids
+            if l.state == 'wlist' and l.sharing!='no_sharing'])
+
+        self.wlist = wlist_no_sharing + wlist_sharing
+        self.available = av_tot - (request_no_sharing+
+                request_sharing+confirm_no_sharing+confirm_sharing)
 
 
-        return res
+    @api.one
+    @api.depends('departure_cabin_line_ids')
+    def _total_spaces(self):
+        self.total_adults = 0
+        self.total_children = 0
+        self.total_young = 0
+        self.total_spaces_taken = 0
+        for cline in self.departure_cabin_line_ids:
+            if cline.state in ['request', 'confirm']:
+                self.total_adults += cline.adult
+                self.total_children += cline.children
+                self.total_young += cline.young
 
-    def _total_spaces(self, cr, uid, ids, field_name, arg, context=None):
-        if context==None:
-            context={}
-        res = {}
-        for dep in self.browse(cr, uid, ids, context):
-            res[dep.id] = {}
-            res[dep.id]['total_adults'] = 0
-            res[dep.id]['total_children'] = 0
-            res[dep.id]['total_young'] = 0
-            res[dep.id]['total_spaces_taken'] = 0
-            for cline in dep.departure_cabin_line_ids:
-                if cline.state in ['request', 'confirm']:
-                    res[dep.id]['total_adults'] += cline.adult
-                    res[dep.id]['total_children'] += cline.children
-                    res[dep.id]['total_young'] += cline.young
+        self.total_spaces_taken = self.total_adults +\
+            self.total_children +\
+            self.total_young
 
-            res[dep.id]['total_spaces_taken'] = res[dep.id]['total_adults'] +\
-                res[dep.id]['total_children'] +\
-                res[dep.id]['total_young']
-
-
-        return res
-
-
-    _columns = {
-        'name':fields.char('Name', 255, help='Name', required=True),
-        'departure_date':fields.date('Departure date', help='Departure date',
-            required=True),
-        'arrival_date':fields.date('Arrival date', help='Arrival date',
-            required=True),
-        'observations':fields.html('Observations', help='Observations'),
-        'ship_id':fields.many2one('cruise.ship', 'Ship',
-            help='Add a ship for departure', required=True),
-        'itinerary':fields.char('Itinerary', 50, help='Itinerary for this departure '),
-        'cabin_ids':fields.many2many('cruise.cabin'
-                , 'departure_cabin_rel'
-                , 'cabin_id'
-                , 'departure_id'
-                , 'Cabins'
-                , help='Cabins in departure'),
-
-        'max_capacity':fields.related(
-              'ship_id'
-            , 'max_pax'
-            , readonly=True
-            , type='integer'
-            , string='Maximum Capacity'
-            , help='Maximum capacity of ship'),
-        'adult_price_normal':fields.float('Adult price', required=True
-            ,digits_compute=dp.get_precision('Product Price')
-            ,help='fields help'),
-        'young_price_normal':fields.float('Young price', required=True
-            ,digits_compute=dp.get_precision('Product Price')
-            ,help='fields help'),
-        'child_price_normal':fields.float('Child price', required=True
-            ,digits_compute=dp.get_precision('Product Price')
-            ,help='fields help'),
-        'fast_note':fields.char('Note', 100,
-            help='A fast note to briefly inform users'),
-        'departure_cabin_line_ids':fields.one2many('departure_cabin.line'
+    name = fields.Char('Name', help='Name', required=True)
+    departure_date = fields.Date('Departure date', help='Departure date',
+        required=True, default=fields.Date.today())
+    arrival_date = fields.Date('Arrival date', help='Arrival date',
+        required=True, default=fields.Date.today())
+    observations = fields.Html('Observations', help='Observations')
+    ship_id = fields.Many2one('cruise.ship', 'Ship',
+        help='Add a ship for departure', required=True)
+    itinerary = fields.Char('Itinerary', help='Itinerary for this departure ')
+    cabin_ids=fields.Many2many('product.product'
+            , 'departure_cabin_rel'
+            , 'cabin_id'
             , 'departure_id'
-            , 'Cabins reserved'
-            , help='Add cabins reserved'),
-        'availability':fields.function(_availability
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Availability', help='Cabin Availability'),
-        'request':fields.function(_availability
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Request', help='Cabin spaces requested'),
-        'confirm':fields.function(_availability
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Confirm', help='Cabin spaces confirmed'),
-        'wlist':fields.function(_availability
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Waiting List'
-            , help='Cabin spaces in waiting list'),
-        'available':fields.function(_availability
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Available', help='Cabin spaces available'),
-        'total_adults':fields.function(_total_spaces
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Total Adults', help='Total adults reserving'),
-        'total_children':fields.function(_total_spaces
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Total Children', help='Total children reserving'),
-        'total_young':fields.function(_total_spaces
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Total Young', help='Total young reserving'),
-        'total_spaces_taken':fields.function(_total_spaces
-            , method=True, store=False, type="integer", fnct_search=None
-            , multi=True, string='Total Spaces Taken', help='Total spaces taken'),
-    }
-
-    _defaults = {
-        'departure_date':fields.date.context_today,
-        'arrival_date': fields.date.context_today,
-    }
-
+            , 'Cabins'
+            , help='Cabins in departure')
+    max_capacity = fields.Integer(string='Maximum Capacity',
+          related = 'ship_id.max_pax', readonly=True
+        , help='Maximum capacity of ship')
+    adult_price_normal = fields.Float('Adult price', required=True
+        ,digits_compute=dp.get_precision('Product Price')
+        ,help='fields help')
+    young_price_normal = fields.Float('Young price', required=True
+        ,digits_compute=dp.get_precision('Product Price')
+        ,help='fields help')
+    child_price_normal = fields.Float('Child price', required=True
+        ,digits_compute=dp.get_precision('Product Price')
+        ,help='fields help')
+    fast_note = fields.Char('Note', size=100,
+        help='A fast note to briefly inform users')
+    departure_cabin_line_ids = fields.One2many('departure_cabin.line'
+        , 'departure_id'
+        , 'Cabins reserved'
+        , help='Add cabins reserved')
+    availability = fields.Integer(compute="_availability"
+        , method=True, store=False, fnct_search=None
+        , multi=True, string='Availability', help='Cabin Availability')
+    request = fields.Integer(compute = "_availability"
+        , method=True, store=False, fnct_search=None
+        , multi=True, string='Request', help='Cabin spaces requested')
+    confirm = fields.Integer(compute = "_availability"
+        , method=True, store=False, fnct_search=None
+        , string='Confirm', help='Cabin spaces confirmed')
+    wlist=fields.Integer(compute="_availability"
+        , method=True, store=False, fnct_search=None
+        , string='Waiting List'
+        , help='Cabin spaces in waiting list')
+    available=fields.Integer(compute="_availability"
+        , method=True, store=False, fnct_search=None
+        , string='Available', help='Cabin spaces available')
+    total_adults=fields.Integer(compute="_total_spaces"
+        , method=True, store=False,  fnct_search=None
+        , string='Total Adults', help='Total adults reserving')
+    total_children=fields.Integer(compute="_total_spaces"
+        , method=True, store=False, fnct_search=None
+        , string='Total Children', help='Total children reserving')
+    total_young=fields.Integer(compute="_total_spaces"
+        , method=True, store=False, fnct_search=None
+        , string='Total Young', help='Total young reserving')
+    total_spaces_taken = fields.Integer(compute="_total_spaces"
+        , method=True, store=False, fnct_search=None
+        , string='Total Spaces Taken', help='Total spaces taken')
 
 
     def create(self, cr, uid, values, context=None):
