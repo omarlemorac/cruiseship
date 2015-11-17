@@ -34,10 +34,11 @@ class cruise_ship(models.Model):
     observations = fields.Html('Observations')
     max_pax = fields.Integer('Maximum capacity'
                              , help='Maximum passenger number allowed in law')
-    cabin_ids = fields.One2many('product.product', 'ship_id', 'Cabins'
+    cabin_ids = fields.One2many('cruise.cabin', 'ship_id', 'Cabins'
                                 , help='Add cabins to this ship')
     check_max_capacity = fields.Boolean('Check maximum capacity'
                                         , help='Check maximum capacity in reserving', default=False)
+
 
 
 class cabin_pax_line(models.Model):
@@ -125,7 +126,7 @@ class departure_cabin_line(models.Model):
     _description = 'Line for cabin in departure'
     _inherits = {'tour_folio.line':'tour_folio_line_id'}
 
-    cabin_id = fields.Many2one('product.product', 'Cabin'
+    cabin_id = fields.Many2one('cruise.cabin', 'Cabin'
        , help='Add a cabin for departure', domain=[('iscabin', '=', True)]
        , required=True)
     tour_folio_line_id = fields.Many2one('tour_folio.line', 'Tour Folio Line'
@@ -269,14 +270,15 @@ class departure_cabin_line(models.Model):
                 float(values['young']) * float(values['young_price_unit']) + \
                 float(values['children']) * float(values['child_price_unit'])
 
-    def create(self, cr, uid, values, context=None):
+    @api.model
+    def create(self, values):
         values['order_id'] = values['folio_id']
         values['price_unit'] = self._compute_price_subtotal(values)
         values['price_subtotal'] = self._compute_price_subtotal(values)
-        cabin_obj = self.pool.get('product.product')
-        departure_obj = self.pool.get('cruise.departure')
-        cabin =  cabin_obj.browse(cr, uid, [values['cabin_id']])[0]
-        departure = departure_obj.browse(cr,uid,[values['departure_id']])[0]
+        cabin_obj = self.env['cruise.cabin']
+        departure_obj = self.env['cruise.departure']
+        cabin =  cabin_obj.browse([values['cabin_id']])[0]
+        departure = departure_obj.browse([values['departure_id']])[0]
         dadult = values['adult'] and \
           "{} adult(s) {:.2f}".format(values['adult'], float(values['adult_price_unit'])) or ""
         dchildren = values['children'] and \
@@ -286,8 +288,11 @@ class departure_cabin_line(models.Model):
         description = "{} {}/{}. {} {} {}".format(cabin.name, departure.arrival_date,
                 departure.departure_date, dadult, dchildren, dyoung)
         values['name'] = description
-        _id = super(departure_cabin_line, self).create(cr,uid,values)
-        request = self.action_request(cr, uid, [_id])
+        _id = super(departure_cabin_line, self).create(values)
+        print "=============================================="
+        print _id
+        print "=============================================="
+        request = self.action_request()
         return _id
 
 
@@ -365,7 +370,7 @@ class departure(models.Model):
     ship_id = fields.Many2one('cruise.ship', 'Ship',
         help='Add a ship for departure', required=True)
     itinerary = fields.Char('Itinerary', help='Itinerary for this departure ')
-    cabin_ids=fields.Many2many('product.product'
+    cabin_ids=fields.Many2many('cruise.cabin'
             , 'departure_cabin_rel'
             , 'cabin_id'
             , 'departure_id'
@@ -443,4 +448,3 @@ class departure(models.Model):
                            ship_obj.name,dd.strftime('%Y-%b-%d'),
                                          ad.strftime('%b-%d'))
         return {'value':res}
-
