@@ -22,6 +22,7 @@
 from openerp import api, exceptions, fields, models
 import openerp.addons.decimal_precision as dp
 import datetime
+from sets import Set
 
 GENDER_LIST = [('m', 'Male'), ('f', 'Female')]
 
@@ -181,25 +182,75 @@ class departure_cabin_line(models.Model):
             return False
         return True
 
-    @api.one
-    def action_request(self):
-        self.action_reqconf('request')
 
-    @api.one
+    @api.multi
+    def action_request(self):
+        #self.action_reqconf('request')
+        print "************-------------**************"
+        for cabin_line in self:
+            print cabin_line
+            print cabin_line.departure_id
+
+            print "Already reserved {}".format(self._already_reserved_cabins(cabin_line))
+            arc = self._already_reserved_cabins(cabin_line)
+            if not arc: #There is no other reservations
+                cabin_line.state = 'request'
+
+            if cabin_line.sharing == 'no_sharing':
+                pass
+            elif cabin_line.sharing == 'male_sharing':
+                if cabin_line.cabin_id.id in arc:
+                    print "Check male sharing availability"
+                    other_cabin_line_list = self._get_cabin_reservation(cabin_line)
+                    if self._shared_cabin_reservation(cabin_line, other_cabin_line_list):
+                        cabin_line.state = 'request'
+                    else:
+                        cabin_line.state = 'wlist'
+
+        print "************------out----------***********"
+
+    def _shared_cabin_reservation(self, cabin_line, other_cabin_line_list):
+        """
+        Check sharing reservation
+        """
+        cabin_obj = cabin_line.env['cruise.cabin']
+        cabin = cabin_obj.browse(cabin_line.cabin_id.id)[0]
+        print "Cabin capacity adult {}".format(cabin.max_adult)
+        for cl in other_cabin_line_list:
+            spaces_reserved = 0
+            if cabin_line.sharing == cl.sharing:
+                spaces_reserved += cl.adult
+                print "Reserved spaces self {} other {}".format(cl.adult, cabin_line.adult)
+            else:
+                print "Show warning. Cabin reserved with diferent sharing"
+
+        if spaces_reserved + cabin_line.adult <= cabin.max_adult:
+            return True
+
+        return False
+
+    def _already_reserved_cabins(self, cabin_line):
+        """
+        Get all reservations on request and confirm
+        """
+        return  [r.cabin_id.id for r
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if r.state in ['request', 'confirm']]
+
+    def _get_cabin_reservation(self, cabin_line):
+        """
+        Get all reservations of one cabin
+        """
+        return [r for r
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if r.cabin_id.id == cabin_line.cabin_id.id
+                    and r.state in ['request', 'confirm']]
+
+    @api.multi
     def action_reqconf(self, target_state):
         cabin_line = self.browse([0])
         cabin_id = cabin_line.cabin_id.id
         reserved = []
-        if target_state == 'request':
-            reserved = [r.cabin_id for r
-                    in cabin_line.departure_id.departure_cabin_line_ids
-                    if r.state in ['request', 'confirm']
-                      and r.sharing == 'no_sharing']
-        if target_state == 'confirm':
-            reserved = [r.cabin_id for r
-                    in cabin_line.departure_id.departure_cabin_line_ids
-                    if r.state in ['confirm']
-                      and r.sharing == 'no_sharing']
 
         #If cabin is already reserved in no_sharing state='wlist'
         if cabin_id in [r.id for r in reserved]:
@@ -289,10 +340,7 @@ class departure_cabin_line(models.Model):
                 departure.departure_date, dadult, dchildren, dyoung)
         values['name'] = description
         _id = super(departure_cabin_line, self).create(values)
-        print "=============================================="
-        print _id
-        print "=============================================="
-        request = self.action_request()
+        self.action_request()
         return _id
 
 

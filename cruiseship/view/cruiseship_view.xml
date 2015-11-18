@@ -3,12 +3,12 @@
 	<data>
         <menuitem id="cruiseship_management_menu" name="Cruise Ship Management"/>
         <menuitem id="cruiseship_configuration_menu" name="Configuration" sequence="20" parent ="cruiseship_management_menu"/>
-        
-        
+
+
         <!--====================================================
-							Ship	
+							Ship
 		==================================================== -->
-		
+
 		<record model="ir.ui.view" id="view_cruise_ship_form">
 			<field name="name">cruise.ship.form</field>
 			<field name="model">cruise.ship</field>
@@ -74,19 +74,19 @@
 			<field name="view_mode">tree,form</field>
 		</record>
 		<menuitem name="Ship"
-		          id="menu_open_cruise_ship_form_tree" 
+		          id="menu_open_cruise_ship_form_tree"
 				  action="open_cruise_ship_form_tree"
 				  sequence="21"
 				  parent="cruiseship_configuration_menu"/>
         <!--====================================================
-							Departure	
+							Departure
 		==================================================== -->
         <record id="cruise_departure_search_form_view" model="ir.ui.view">
             <field name="name">cruise.departure.search.form</field>
             <field name="model">cruise.departure</field>
             <field name="arch" type="xml">
                 <search string="Departure custom filter">
-                    <filter string="Not operated" 
+                    <filter string="Not operated"
                       name="notoperated"
                        domain="[('departure_date','&gt;=',((context_today()).strftime('%%Y-%%m-%%d')))]"
                         />
@@ -234,9 +234,9 @@
                                             nolabel="1">
                                             <tree>
                                               <field name="pax_id" />
-                                              <field name="pax_gender" />    
-                                              <field name="pax_nationality" />    
-                                              <field name="id_no" />    
+                                              <field name="pax_gender" />
+                                              <field name="pax_nationality" />
+                                              <field name="id_no" />
                                             </tree>
                                             <form version="7.0">
                                               <div class="oe_title">
@@ -254,20 +254,20 @@
                                                 </h2>
                                               </div>
                                               <group>
-                                                <field name="ib_ap_dep_id" />    
-                                                <field name="ib_ap_arr_id" />    
-                                                <field name="ib_time_dep" on_change='onchange_ib_time_dep(ib_time_dep)' />    
-                                                <field name="ib_time_arr" />    
-                                                <field name="ib_airline_id" />    
-                                                <field name="ib_flight_no" />    
+                                                <field name="ib_ap_dep_id" />
+                                                <field name="ib_ap_arr_id" />
+                                                <field name="ib_time_dep" on_change='onchange_ib_time_dep(ib_time_dep)' />
+                                                <field name="ib_time_arr" />
+                                                <field name="ib_airline_id" />
+                                                <field name="ib_flight_no" />
                                               </group>
                                               <group>
-                                                <field name="ob_ap_dep_id" />    
-                                                <field name="ob_ap_arr_id" />    
-                                                <field name="ob_time_dep" on_change='onchange_ob_time_dep(ob_time_dep)'/>    
-                                                <field name="ob_time_arr" />    
-                                                <field name="ob_airline_id" />    
-                                                <field name="ob_flight_no" />    
+                                                <field name="ob_ap_dep_id" />
+                                                <field name="ob_ap_arr_id" />
+                                                <field name="ob_time_dep" on_change='onchange_ob_time_dep(ob_time_dep)'/>
+                                                <field name="ob_time_arr" />
+                                                <field name="ob_airline_id" />
+                                                <field name="ob_flight_no" />
                                               </group>
                                               <label for="arrange_ticket" string="Arrange Ticket" />
                                               <field name="arrange_ticket" />
@@ -275,7 +275,7 @@
                                               <field name="arrange_migration_card" />
                                               <notebook>
                                                 <page string="Observations">
-                                                  <field name="observations" 
+                                                  <field name="observations"
                                                     nolabel="1"/>
                                                 </page>
                                               </notebook>
@@ -306,7 +306,7 @@
       <field name="search_view_id" ref="cruise_departure_search_form_view" />
 		</record>
 		<menuitem name="Departure"
-		          id="menu_open_cruise_departure_form_tree" 
+		          id="menu_open_cruise_departure_form_tree"
 				  action="open_departure_ship_form_tree"
 				  sequence="22"
 				  parent="cruiseship_configuration_menu"/>
