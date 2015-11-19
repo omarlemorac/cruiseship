@@ -185,30 +185,27 @@ class departure_cabin_line(models.Model):
 
     @api.multi
     def action_request(self):
-        #self.action_reqconf('request')
-        print "************-------------**************"
         for cabin_line in self:
-            print cabin_line
-            print cabin_line.departure_id
-
-            print "Already reserved {}".format(self._already_reserved_cabins(cabin_line))
             arc = self._already_reserved_cabins(cabin_line)
             if not arc: #There is no other reservations
                 cabin_line.state = 'request'
+                return
 
             if cabin_line.sharing == 'no_sharing':
-                pass
-            elif cabin_line.sharing == 'male_sharing':
+                #Cabin is already reserved?
                 if cabin_line.cabin_id.id in arc:
-                    print "Check male sharing availability"
+                    cabin_line.state = 'wlist'
+                else:
+                    cabin_line.state = 'request'
+                    
+            elif cabin_line.sharing in ('male_sharing', 'female_sharing'):
+                if cabin_line.cabin_id.id in arc:
                     other_cabin_line_list = self._get_cabin_reservation(cabin_line)
                     if self._shared_cabin_reservation(cabin_line, other_cabin_line_list):
                         cabin_line.state = 'request'
                     else:
-                        print "Pone en lista de espera"
                         cabin_line.state = 'wlist'
 
-        print "************------out----------***********"
 
     def _shared_cabin_reservation(self, cabin_line, other_cabin_line_list):
         """
@@ -244,64 +241,6 @@ class departure_cabin_line(models.Model):
                     in cabin_line.departure_id.departure_cabin_line_ids
                     if r.cabin_id.id == cabin_line.cabin_id.id
                     and r.state in ['request', 'confirm']]
-
-    @api.multi
-    def action_reqconf(self, target_state):
-        cabin_line = self.browse([0])
-        cabin_id = cabin_line.cabin_id.id
-        reserved = []
-
-        #If cabin is already reserved in no_sharing state='wlist'
-        if cabin_id in [r.id for r in reserved]:
-            self.state = 'wlist'
-            return
-
-        max_adult = cabin_line.cabin_id.max_adult
-        sharing = cabin_line.sharing
-        adult = cabin_line.adult
-
-        #If cabin is already reserved an current reservation is no_sharing state='wlist'
-        if sharing == 'no_sharing':
-            reserved = []
-            if target_state == 'request':
-                reserved = [r.cabin_id for r
-                        in cabin_line.departure_id.departure_cabin_line_ids
-                        if r.state in ['request', 'confirm']]
-            if target_state == 'confirm':
-                reserved = [r.cabin_id for r
-                        in cabin_line.departure_id.departure_cabin_line_ids
-                        if r.state in ['confirm']]
-            if cabin_id in [r.id for r in reserved]:
-                self.state = 'wlist'
-                return
-            else:
-                self.state = target_state
-                return
-        else: #Otherwise current reservation is male or female sharing
-            #Cabin is reserved with diferent sharing
-            reserved = [c.cabin_id.id for c
-                    in cabin_line.departure_id.departure_cabin_line_ids
-                    if c.state in ['request', 'request']
-                      and c.sharing != sharing
-                      and c.cabin_id.id == cabin_id]
-            if reserved:
-                self.state = 'wlist'
-                return
-
-            #Reserved same sharing
-            res_adults = sum([c.adult for c
-                    in cabin_line.departure_id.departure_cabin_line_ids
-                    if c.state in ['request', 'confirm']
-                      and c.sharing == sharing
-                      and c.cabin_id.id == cabin_id
-                      ])
-
-            if max_adult < res_adults + adult:
-                self.state = 'wlist'
-                return
-
-        self.state = 'wlist'
-        return
 
     @api.one
     def action_confirm(self):

@@ -20,7 +20,7 @@
 						Cabin type
 		==================================================== -->
         <record model="cruise.cabin.type" id="cruise_ship_ct_0">
-			<field name="parent_id"  ref="product.product_category_all" />
+  			<field name="parent_id"  ref="product.product_category_all" />
             <field name="name" >All cabins</field>
         </record>
         <record model="cruise.cabin.type" id="cruise_ship_ct_1">

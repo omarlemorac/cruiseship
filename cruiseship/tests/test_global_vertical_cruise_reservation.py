@@ -48,19 +48,19 @@ class GlobalTestResevation(TransactionCase):
         })
         return cabin_line_id
 
-    def test_10_onchange_date(self):
+    def test_10_same_gender_sharing(self):
         departure_date = datetime.strptime('2015-11-17', '%Y-%m-%d')
         arrival_date = datetime.strptime('2015-11-24', '%Y-%m-%d')
         name = 'Departure Test'
-        print "=========================================="
-        print "======= Custom Tests           ==========="
+        print "========================================="
+        print "======= Testing Same Gender   ==========="
         ship = self.ship.env.ref("cruiseship.cruise_ship_samba_demo")
         departure_id = self.create_departure(name, departure_date,
                 arrival_date, ship.id, 3250.00, 3100.00, 3000.00)
         print "=========================================="
         print "Creada la salida {}".format(departure_id)
         print "=========================================="
-        #Create male with one sit reservation
+        #Create male with one seat reservation
         folio_obj = self.env['tour.folio']
         folio = folio_obj.env.ref('tour_operation.to_folio_01')
         cabin_obj = self.env['cruise.cabin']
@@ -109,3 +109,49 @@ class GlobalTestResevation(TransactionCase):
         cabin_line_id3.action_request()
 
         self.assertEqual(cabin_line_id3.state, 'wlist')
+
+        cabin2 = cabin_obj.env.ref('cruiseship.cruise_ship_cabin_s2_demo')
+        cabin_line_id4 = self.create_reservation(
+            departure_id.id,
+            folio.id,
+            cabin2.id, 1, 0, 0,'no_sharing', 1500.00, 1200.00, 1100.00 )
+        print "=========================================="
+        print "Creada la reserva {} no sharing".format(cabin_line_id4)
+        print "=========================================="
+
+        print "=========================================="
+        print "La reserva {} deberia estar request".format(cabin_line_id4)
+        print "=========================================="
+
+        cabin_line_id4.action_request()
+
+        self.assertEqual(cabin_line_id4.state, 'request')
+        
+    def test_20_no_sharing(self):
+        departure_date = datetime.strptime('2015-11-17', '%Y-%m-%d')
+        arrival_date = datetime.strptime('2015-11-24', '%Y-%m-%d')
+        name = 'Departure Test'
+        print "========================================="
+        print "======= Testing No sharing    ==========="
+        ship = self.ship.env.ref("cruiseship.cruise_ship_samba_demo")
+        departure_id = self.create_departure(name, departure_date,
+                arrival_date, ship.id, 3250.00, 3100.00, 3000.00)
+        print "=========================================="
+        print "Departure {} created".format(departure_id)
+        print "=========================================="
+        #Create male with one seat reservation
+        folio_obj = self.env['tour.folio']
+        folio = folio_obj.env.ref('tour_operation.to_folio_01')
+        cabin_obj = self.env['cruise.cabin']
+        cabin = cabin_obj.env.ref('cruiseship.cruise_ship_cabin_s1_demo')
+        #print "Nombre de la cabina {}".cabin.name
+        cabin_line_id1 = self.create_reservation(
+            departure_id.id,
+            folio.id,
+            cabin.id,  1, 0, 0,'male_sharing', 1500.00, 1200.00, 1100.00 )
+        print "=========================================="
+        print "Created reservation {} no sharing".format(cabin_line_id1)
+        print "=========================================="
+
+        cabin_line_id1.action_request()
+        self.assertEqual(cabin_line_id1.state, 'request')
