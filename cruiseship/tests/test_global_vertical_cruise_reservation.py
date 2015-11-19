@@ -108,4 +108,4 @@ class GlobalTestResevation(TransactionCase):
 
         cabin_line_id3.action_request()
 
-        self.assertEqual(cabin_line_id2.state, 'wlist')
+        self.assertEqual(cabin_line_id3.state, 'wlist')

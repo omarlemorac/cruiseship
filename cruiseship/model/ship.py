@@ -205,6 +205,7 @@ class departure_cabin_line(models.Model):
                     if self._shared_cabin_reservation(cabin_line, other_cabin_line_list):
                         cabin_line.state = 'request'
                     else:
+                        print "Pone en lista de espera"
                         cabin_line.state = 'wlist'
 
         print "************------out----------***********"
@@ -215,12 +216,10 @@ class departure_cabin_line(models.Model):
         """
         cabin_obj = cabin_line.env['cruise.cabin']
         cabin = cabin_obj.browse(cabin_line.cabin_id.id)[0]
-        print "Cabin capacity adult {}".format(cabin.max_adult)
+        spaces_reserved = 0
         for cl in other_cabin_line_list:
-            spaces_reserved = 0
             if cabin_line.sharing == cl.sharing:
                 spaces_reserved += cl.adult
-                print "Reserved spaces self {} other {}".format(cl.adult, cabin_line.adult)
             else:
                 print "Show warning. Cabin reserved with diferent sharing"
 
