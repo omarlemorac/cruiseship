@@ -184,11 +184,11 @@ class departure_cabin_line(models.Model):
 
 
     @api.multi
-    def action_request(self):
+    def action_reqconf(self, state):
         for cabin_line in self:
             arc = self._already_reserved_cabins(cabin_line)
             if not arc: #There is no other reservations
-                cabin_line.state = 'request'
+                cabin_line.state = state
                 return
 
             if cabin_line.sharing == 'no_sharing':
@@ -196,13 +196,13 @@ class departure_cabin_line(models.Model):
                 if cabin_line.cabin_id.id in arc:
                     cabin_line.state = 'wlist'
                 else:
-                    cabin_line.state = 'request'
-                    
+                    cabin_line.state = state
+
             elif cabin_line.sharing in ('male_sharing', 'female_sharing'):
                 if cabin_line.cabin_id.id in arc:
                     other_cabin_line_list = self._get_cabin_reservation(cabin_line)
                     if self._shared_cabin_reservation(cabin_line, other_cabin_line_list):
-                        cabin_line.state = 'request'
+                        cabin_line.state = state
                     else:
                         cabin_line.state = 'wlist'
 
@@ -242,7 +242,10 @@ class departure_cabin_line(models.Model):
                     if r.cabin_id.id == cabin_line.cabin_id.id
                     and r.state in ['request', 'confirm']]
 
-    @api.one
+    def action_request(self):
+        self.action_reqconf('request')
+
+
     def action_confirm(self):
         self.action_reqconf('confirm')
 
@@ -277,10 +280,10 @@ class departure_cabin_line(models.Model):
         description = "{} {}/{}. {} {} {}".format(cabin.name, departure.arrival_date,
                 departure.departure_date, dadult, dchildren, dyoung)
         values['name'] = description
-        _id = super(departure_cabin_line, self).create(values)
-        self.action_request()
-        return _id
-
+        new_cabin_line = super(departure_cabin_line, self).create(values)
+        cabin_line_obj = self.env['departure_cabin.line']
+        new_cabin_line.action_request()
+        return new_cabin_line
 
 class departure_ship_line(models.Model):
 

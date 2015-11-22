@@ -54,6 +54,7 @@ class GlobalTestResevation(TransactionCase):
         name = 'Departure Test'
         print "========================================="
         print "======= Testing Same Gender   ==========="
+        print "========================================="
         ship = self.ship.env.ref("cruiseship.cruise_ship_samba_demo")
         departure_id = self.create_departure(name, departure_date,
                 arrival_date, ship.id, 3250.00, 3100.00, 3000.00)
@@ -74,7 +75,7 @@ class GlobalTestResevation(TransactionCase):
         print "Creada la reserva {} con 1 pax compartido varon".format(cabin_line_id1)
         print "=========================================="
 
-        cabin_line_id1.action_request()
+        #cabin_line_id1.action_request()
         self.assertEqual(cabin_line_id1.state, 'request')
 
 
@@ -90,7 +91,7 @@ class GlobalTestResevation(TransactionCase):
         print "La reserva {} deberia estar confirmada".format(cabin_line_id2)
         print "=========================================="
 
-        cabin_line_id2.action_request()
+        #cabin_line_id2.action_request()
 
         self.assertEqual(cabin_line_id2.state, 'request')
 
@@ -106,7 +107,7 @@ class GlobalTestResevation(TransactionCase):
         print "La reserva {} deberia estar en lista de espera".format(cabin_line_id3)
         print "=========================================="
 
-        cabin_line_id3.action_request()
+        #cabin_line_id3.action_request()
 
         self.assertEqual(cabin_line_id3.state, 'wlist')
 
@@ -123,10 +124,10 @@ class GlobalTestResevation(TransactionCase):
         print "La reserva {} deberia estar request".format(cabin_line_id4)
         print "=========================================="
 
-        cabin_line_id4.action_request()
+        #cabin_line_id4.action_request()
 
         self.assertEqual(cabin_line_id4.state, 'request')
-        
+
     def test_20_no_sharing(self):
         departure_date = datetime.strptime('2015-11-17', '%Y-%m-%d')
         arrival_date = datetime.strptime('2015-11-24', '%Y-%m-%d')
