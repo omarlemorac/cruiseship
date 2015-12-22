@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+    <!-- Paper format A4 landscape -->
+    <record id="cruiseship_A4_landscape" model="report.paperformat">
+        <field name="name">A4 landscape</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">3</field>
+        <field name="margin_left">3</field>
+        <field name="margin_right">3</field>
+        <field name="header_line" eval="True"/>
+        <field name="header_spacing">3</field>
+        <field name="dpi">80</field>
+    </record>
+    <!-- report definition-->
+    <report
+        id="vertical_cruise_passenger_list"
+        model="cruise.departure"
+        string="Passenger List Report"
+        name="cruiseship.report_passenger_list"
+        file="cruiseship.report_passenger_list"
+        report_type="qweb-pdf" />
+
+
+    <!-- Report paper format -->
+    <record id="cruiseship.vertical_cruise_passenger_list" model="ir.actions.report.xml">
+      <field name="paperformat_id" ref="cruiseship.cruiseship_A4_landscape" />
+    </record>
+
+
+    <!--report template-->
+    <template id="report_passenger_list">
+      <t t-call="report.html_container">
+        <t t-foreach="docs" t-as="doc">
+        <!--<t t-call="report.external_layout">-->
+          <div class="page">
+            <p>Galapagos Experience</p>
+            <h2 class="text-center">Lista de Pasajeros</h2>
+            <h3 class="text-center">Salida: <span t-field="doc.name" /></h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Apellido</th>
+                  <th>Nombre</th>
+                  <th>T</th>
+                  <th>MC</th>
+                  <th>Pasaporte</th>
+                  <th>Genero</th>
+                  <th>Nacionalidad</th>
+                  <th>Fecha de Nacimiento</th>
+                  <th>Asignacion de Cabina</th>
+                  <th colspan="2">Vuelos (Ida/Retorno)</th>
+                </tr>
+                <t t-foreach="doc.departure_cabin_line_ids" t-as="cabin_line">
+                  <t t-foreach="cabin_line.cabin_pax_line_ids" t-as="pax_line">
+
+                    <tr>
+                      <td><strong><span t-field="pax_line.pax_id.lastname" /></strong></td>
+                      <td><strong><span t-field="pax_line.pax_id.firstname" /></strong></td>
+                      <td><span t-esc="pax_line.arrange_ticket and 'Si' or 'No'" /></td>
+                      <td><span t-esc="pax_line.arrange_migration_card and 'Si' or 'No'" /></td>
+                      <td><span t-field="pax_line.id_no" /></td>
+                      <td><span t-field="pax_line.pax_id.gender" /></td>
+                      <td><span t-field="pax_line.pax_id.nationality_id.name" /></td>
+                      <td><span t-field="pax_line.pax_id.date_of_birth" /></td>
+                      <td><span t-field="cabin_line.cabin_id.name" /></td>
+                      <td style="font-size:11px;">
+                        <span t-field="pax_line.ib_ap_dep_id.name" />
+                        <span t-field="pax_line.ib_flight_no" />
+                        <span t-field="pax_line.ib_time_dep" widget="datetime" /><br />
+                        <span t-field="pax_line.ib_ap_arr_id.name" />
+                        <span t-field="pax_line.ib_time_arr" widget="datetime" /><br />
+                        <span t-field="pax_line.ob_ap_dep_id.name" />
+                        <span t-field="pax_line.ob_flight_no" />
+                        <span t-field="pax_line.ob_time_dep" widget="datetime" /><br />
+                        <span t-field="pax_line.ob_ap_arr_id.name" />
+                        <span t-field="pax_line.ob_time_arr" widget="datetime" /><br />
+                      </td>
+                    </tr>
+                    <t t-if="pax_line.pax_id.dietary_requirements" >
+                      <tr>
+                        <td colspan="10">Restricciones Alimenticias</td>
+                      </tr>
+                      <tr>
+                        <td><span t-field="pax_line.pax_id.dietary_requirements" /></td>
+                      </tr>
+                    </t>
+                    <t t-if="pax_line.pax_id.allergies_medical" >
+                      <tr>
+                        <td colspan="10">Restricciones de Salud</td>
+                      </tr>
+                      <tr>
+                        <td><span t-field="pax_line.pax_id.allergies_medical" /></td>
+                      </tr>
+                    </t>
+                    <t t-if="pax_line.observations" >
+                      <tr>
+                        <td colspan="10">
+                          <p><u>Observaciones</u></p>
+                          <p><span t-field="pax_line.observations" /></p>
+                        </td>
+                      </tr>
+                    </t>
+                  </t>
+                </t>
+              </thead>
+            </table>
+          </div>  
+        </t>
+      </t>
+    </template>
+  </data>
+</openerp>
