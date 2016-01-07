@@ -34,7 +34,7 @@
         <!--====================================================
 						Cabin
 		==================================================== -->
-        <record model="cruise.cabin" id="cruise_ship_cabin_s1_demo">
+        <record model="product.product" id="cruise_ship_cabin_s1_demo">
           <field name="name" >Samba/Cabin 1</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
@@ -42,7 +42,7 @@
             <field name="iscabin" eval="True" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s2_demo">
+        <record model="product.product" id="cruise_ship_cabin_s2_demo">
           <field name="name" >Samba/Cabin 2</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
@@ -50,7 +50,7 @@
             <field name="iscabin" eval="True" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s3_demo">
+        <record model="product.product" id="cruise_ship_cabin_s3_demo">
           <field name="name" >Samba/Cabin 3</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
@@ -58,7 +58,7 @@
             <field name="iscabin" eval="True" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s4_demo">
+        <record model="product.product" id="cruise_ship_cabin_s4_demo">
           <field name="name" >Samba/Cabin 4</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
@@ -66,7 +66,7 @@
             <field name="iscabin" eval="True" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s5_demo">
+        <record model="product.product" id="cruise_ship_cabin_s5_demo">
           <field name="name" >Samba/Cabin 5</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
@@ -74,7 +74,7 @@
             <field name="iscabin" eval="True" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s6_demo">
+        <record model="product.product" id="cruise_ship_cabin_s6_demo">
           <field name="name" >Samba/Cabin 6</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>
@@ -82,7 +82,7 @@
             <field name="iscabin" eval="True" />
             <field name="cabin_type_id" ref="cruise_ship_ct_1" />
         </record>
-        <record model="cruise.cabin" id="cruise_ship_cabin_s7_demo">
+        <record model="product.product" id="cruise_ship_cabin_s7_demo">
           <field name="name" >Samba/Cabin 7</field>
             <field name="max_adult" >2</field>
             <field name="max_child" >2</field>

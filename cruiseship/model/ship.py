@@ -35,7 +35,7 @@ class cruise_ship(models.Model):
     observations = fields.Html('Observations')
     max_pax = fields.Integer('Maximum capacity'
                              , help='Maximum passenger number allowed in law')
-    cabin_ids = fields.One2many('cruise.cabin', 'ship_id', 'Cabins'
+    cabin_ids = fields.One2many('product.product', 'ship_id', 'Cabins' #previous cruise.cabin
                                 , help='Add cabins to this ship')
     check_max_capacity = fields.Boolean('Check maximum capacity'
                                         , help='Check maximum capacity in reserving', default=False)
@@ -127,7 +127,7 @@ class departure_cabin_line(models.Model):
     _description = 'Line for cabin in departure'
     _inherits = {'tour_folio.line':'tour_folio_line_id'}
 
-    cabin_id = fields.Many2one('cruise.cabin', 'Cabin'
+    cabin_id = fields.Many2one('product.product', 'Cabin' #previous cruise.cabin
        , help='Add a cabin for departure', domain=[('iscabin', '=', True)]
        , required=True)
     tour_folio_line_id = fields.Many2one('tour_folio.line', 'Tour Folio Line'
@@ -359,7 +359,7 @@ class departure(models.Model):
     ship_id = fields.Many2one('cruise.ship', 'Ship',
         help='Add a ship for departure', required=True)
     itinerary = fields.Char('Itinerary', help='Itinerary for this departure ')
-    cabin_ids=fields.Many2many('cruise.cabin'
+    cabin_ids=fields.Many2many('product.product' #previus cruise.cabin
             , 'departure_cabin_rel'
             , 'cabin_id'
             , 'departure_id'
