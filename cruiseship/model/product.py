@@ -34,17 +34,17 @@ class cabin_type(models.Model):
     cat_id = fields.Many2one('product.category', 'category', required=True, select=True, ondelete='cascade')
 
 class cruise_cabin(models.Model):
-    #_name = 'cruise.cabin'
+    _name = 'cruise.cabin'
     _description = 'Ship cabin'
-    _inherit = "product.product"
-    #_inherits = {'product.product' : 'product_id'}
-    #product_id = fields.Many2one('product.product', 'Product', required=True, ondelete='restrict')
+    #_inherit = "product.product"
+    _inherits = {'product.product' : 'product_id'}
+    product_id = fields.Many2one('product.product', 'Product', required=True, ondelete='restrict')
     ship_id = fields.Many2one('cruise.ship', 'Ship')
     cabin_type_id = fields.Many2one('cruise.cabin.type', 'Cruise cabin type'
        , help='Cruise cabin type')
     max_adult = fields.Integer('Max Adult')
     max_child = fields.Integer('Max Child')
-    iscabin = fields.Boolean('Is Cabin', default=False)
+    iscabin = fields.Boolean('Is Cabin', default=True)
     departure_ids = fields.Many2many('cruise.departure'
             , 'departure_cabin_rel'
             , 'departure_id'
