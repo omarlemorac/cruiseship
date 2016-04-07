@@ -10,7 +10,7 @@
         <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="1"/>
         <field name="domain_force">
-            ['&amp;', ('state','!=','confirm'), ('user_id', '=', user.id)]
+            ['&amp;', ('state','!=','confirm'), ('create_uid', '=', user.id)]
         </field>
     </record>
     </data>

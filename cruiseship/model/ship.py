@@ -23,6 +23,7 @@ from openerp import api, exceptions, fields, models
 import openerp.addons.decimal_precision as dp
 import datetime
 from sets import Set
+import pdb
 
 GENDER_LIST = [('m', 'Male'), ('f', 'Female')]
 
@@ -187,6 +188,7 @@ class departure_cabin_line(models.Model):
     def action_reqconf(self, state):
         for cabin_line in self:
             arc = self._already_reserved_cabins(cabin_line)
+            pdb.set_trace()
             if not arc: #There is no other reservations
                 cabin_line.state = state
                 return
@@ -200,39 +202,47 @@ class departure_cabin_line(models.Model):
 
             elif cabin_line.sharing in ('male_sharing', 'female_sharing'):
                 if cabin_line.cabin_id.id in arc:
-                    other_cabin_line_list = self._get_cabin_reservation(cabin_line)
-                    if self._shared_cabin_reservation(cabin_line, other_cabin_line_list):
+                    if self._shared_cabin_reservation(cabin_line):
                         cabin_line.state = state
                     else:
                         cabin_line.state = 'wlist'
 
 
-    def _shared_cabin_reservation(self, cabin_line, other_cabin_line_list):
+    def _shared_cabin_reservation(self, cabin_line):
         """
         Check sharing reservation
         """
-        cabin_obj = cabin_line.env['cruise.cabin']
-        cabin = cabin_obj.browse(cabin_line.cabin_id.id)[0]
-        spaces_reserved = 0
-        for cl in other_cabin_line_list:
-            if cabin_line.sharing == cl.sharing:
-                spaces_reserved += cl.adult
-            else:
-                print "Show warning. Cabin reserved with diferent sharing"
+        pdb.set_trace()
+        adult_diff = sum(  [r.adult for r
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if r.state in ['request', 'confirm']
+                    and r.sharing != cabin_line.sharing
+                    and r.id != cabin_line.id ] )
 
-        if spaces_reserved + cabin_line.adult <= cabin.max_adult:
+        if adult_diff:
+            return False
+
+        adult_same = sum(  [r.adult for r
+                    in cabin_line.departure_id.departure_cabin_line_ids
+                    if r.state in ['request', 'confirm']
+                    and r.sharing == cabin_line.sharing
+                    and r.id != cabin_line.id ] )
+
+        if cabin_line.adult + adult_same <= cabin_line.cabin_id.max_adult:
             return True
-
         return False
 
     def _already_reserved_cabins(self, cabin_line):
         """
         Get all reservations on request and confirm
         """
+        #pdb.set_trace()
         return  [r.cabin_id.id for r
                     in cabin_line.departure_id.departure_cabin_line_ids
-                    if r.state in ['request', 'confirm']]
+                    if r.state in ['request', 'confirm']
+                    and r.id != cabin_line.id ]
 
+    @api.multi
     def _get_cabin_reservation(self, cabin_line):
         """
         Get all reservations of one cabin
@@ -242,10 +252,14 @@ class departure_cabin_line(models.Model):
                     if r.cabin_id.id == cabin_line.cabin_id.id
                     and r.state in ['request', 'confirm']]
 
+
+
+    @api.multi
     def action_request(self):
         self.action_reqconf('request')
 
 
+    @api.multi
     def action_confirm(self):
         self.action_reqconf('confirm')
 
