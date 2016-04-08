@@ -188,7 +188,6 @@ class departure_cabin_line(models.Model):
     def action_reqconf(self, state):
         for cabin_line in self:
             arc = self._already_reserved_cabins(cabin_line)
-            pdb.set_trace()
             if not arc: #There is no other reservations
                 cabin_line.state = state
                 return
@@ -212,7 +211,6 @@ class departure_cabin_line(models.Model):
         """
         Check sharing reservation
         """
-        pdb.set_trace()
         adult_diff = sum(  [r.adult for r
                     in cabin_line.departure_id.departure_cabin_line_ids
                     if r.state in ['request', 'confirm']
@@ -236,7 +234,6 @@ class departure_cabin_line(models.Model):
         """
         Get all reservations on request and confirm
         """
-        #pdb.set_trace()
         return  [r.cabin_id.id for r
                     in cabin_line.departure_id.departure_cabin_line_ids
                     if r.state in ['request', 'confirm']
