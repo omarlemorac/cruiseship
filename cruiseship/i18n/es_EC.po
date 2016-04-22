@@ -1,21 +1,19 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* cruiseship
+#	* cruiseship
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-06 00:32+0000\n"
-"PO-Revision-Date: 2016-01-05 22:08-0500\n"
+"POT-Creation-Date: 2016-04-22 17:33+0000\n"
+"PO-Revision-Date: 2016-04-22 17:33+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: es_EC\n"
-"X-Generator: Poedit 1.8.6\n"
 
 #. module: cruiseship
 #: help:cruise.departure,fast_note:0
@@ -33,7 +31,8 @@ msgid "Add a cabin for departure"
 msgstr "Añadir una cabina a la salida"
 
 #. module: cruiseship
-#: help:cruise.departure,ship_id:0 help:departure.ship.line,ship_id:0
+#: help:cruise.departure,ship_id:0
+#: help:departure.ship.line,ship_id:0
 msgid "Add a ship for departure"
 msgstr "Añadir un barco para la salida"
 
@@ -64,14 +63,10 @@ msgid "Adult price"
 msgstr "Precio adulto"
 
 #. module: cruiseship
-#: field:cabin.pax.line,age_ref:0 help:cabin.pax.line,age_ref:0
+#: field:cabin.pax.line,age_ref:0
+#: help:cabin.pax.line,age_ref:0
 msgid "Age reference"
 msgstr "Edad referencial"
-
-#. module: cruiseship
-#: model:product.category,name:cruiseship.cruise_ship_ct_0_product_category
-msgid "All cabins"
-msgstr "Todas las cabinas"
 
 #. module: cruiseship
 #: view:website:cruiseship.report_passenger_list
@@ -115,26 +110,19 @@ msgstr "¿Tramitar entrada del pasajero?"
 
 #. module: cruiseship
 #: field:cabin.pax.line,ib_ap_arr_id:0
-msgid "Arrival Airport Inbound"
-msgstr "Aeropuerto de Llegada Entrante"
-
-#. module: cruiseship
 #: field:cabin.pax.line,ob_ap_arr_id:0
-msgid "Arrival Airport Outbound"
-msgstr "Aeropuerto de Llegada Saliente"
+msgid "Arrival Airport"
+msgstr "Arrival Airport"
 
 #. module: cruiseship
 #: field:cabin.pax.line,ib_time_arr:0
-msgid "Arrival Inbound Time"
-msgstr "Hora de Llegada Entrante"
-
-#. module: cruiseship
 #: field:cabin.pax.line,ob_time_arr:0
-msgid "Arrival Outbound Time"
-msgstr "Hora de Salida Saliente"
+msgid "Arrival Time"
+msgstr "Arrival Time"
 
 #. module: cruiseship
-#: field:cruise.departure,arrival_date:0 help:cruise.departure,arrival_date:0
+#: field:cruise.departure,arrival_date:0
+#: help:cruise.departure,arrival_date:0
 msgid "Arrival date"
 msgstr "Fecha de Llegada"
 
@@ -149,7 +137,13 @@ msgid "Asignacion de Cabina"
 msgstr "Asignacion de Cabina"
 
 #. module: cruiseship
-#: field:cabin.pax.line,bed_space_adult:0 field:departure_cabin.line,adult:0
+#: field:cruise.departure,availability:0
+msgid "Availability"
+msgstr "Disponibilidad"
+
+#. module: cruiseship
+#: field:cabin.pax.line,bed_space_adult:0
+#: field:departure_cabin.line,adult:0
 msgid "Bed Space Adult"
 msgstr "Espacio Adulto"
 
@@ -169,12 +163,14 @@ msgid "Bed Space Young"
 msgstr "Espacio jóven"
 
 #. module: cruiseship
-#: help:cabin.pax.line,bed_space_adult:0 help:departure_cabin.line,adult:0
+#: help:cabin.pax.line,bed_space_adult:0
+#: help:departure_cabin.line,adult:0
 msgid "Bed space adult"
 msgstr "Espacio adulto"
 
 #. module: cruiseship
-#: help:cabin.pax.line,bed_space_child:0 help:departure_cabin.line,children:0
+#: help:cabin.pax.line,bed_space_child:0
+#: help:departure_cabin.line,children:0
 #: help:departure_cabin.line,young:0
 msgid "Bed space child"
 msgstr "Espacio niño"
@@ -184,6 +180,11 @@ msgstr "Espacio niño"
 #: field:departure_cabin.line,cabin_id:0
 msgid "Cabin"
 msgstr "Cabina"
+
+#. module: cruiseship
+#: help:cruise.departure,availability:0
+msgid "Cabin Availability"
+msgstr "Disponibilidad de Cabinas"
 
 #. module: cruiseship
 #: constraint:departure_cabin.line:0
@@ -199,7 +200,8 @@ msgid "Cabins"
 msgstr "Cabinas"
 
 #. module: cruiseship
-#: help:cruise.cabin,departure_ids:0 help:cruise.departure,cabin_ids:0
+#: help:cruise.cabin,departure_ids:0
+#: help:cruise.departure,cabin_ids:0
 msgid "Cabins in departure"
 msgstr "Cabinas en la salida"
 
@@ -252,23 +254,23 @@ msgid "Confirm"
 msgstr "Confirmación"
 
 #. module: cruiseship
-#: field:departure_cabin.line,confirm_date:0
-#: help:departure_cabin.line,confirm_date:0
-msgid "Confirm Date"
-msgstr "Fecha de confirmación"
-
-#. module: cruiseship
-#: field:cabin.pax.line,create_uid:0 field:cruise.cabin,create_uid:0
-#: field:cruise.cabin.type,create_uid:0 field:cruise.departure,create_uid:0
-#: field:cruise.ship,create_uid:0 field:departure.ship.line,create_uid:0
+#: field:cabin.pax.line,create_uid:0
+#: field:cruise.cabin,create_uid:0
+#: field:cruise.cabin.type,create_uid:0
+#: field:cruise.departure,create_uid:0
+#: field:cruise.ship,create_uid:0
+#: field:departure.ship.line,create_uid:0
 #: field:departure_cabin.line,create_uid:0
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: cruiseship
-#: field:cabin.pax.line,create_date:0 field:cruise.cabin,create_date:0
-#: field:cruise.cabin.type,create_date:0 field:cruise.departure,create_date:0
-#: field:cruise.ship,create_date:0 field:departure.ship.line,create_date:0
+#: field:cabin.pax.line,create_date:0
+#: field:cruise.cabin,create_date:0
+#: field:cruise.cabin.type,create_date:0
+#: field:cruise.departure,create_date:0
+#: field:cruise.ship,create_date:0
+#: field:departure.ship.line,create_date:0
 #: field:departure_cabin.line,create_date:0
 msgid "Created on"
 msgstr "Creado en"
@@ -289,7 +291,8 @@ msgid "Cruise Ship Management"
 msgstr "Administración de Cruceros"
 
 #. module: cruiseship
-#: field:cruise.cabin,cabin_type_id:0 help:cruise.cabin,cabin_type_id:0
+#: field:cruise.cabin,cabin_type_id:0
+#: help:cruise.cabin,cabin_type_id:0
 msgid "Cruise cabin type"
 msgstr "Tipo de Cabina Crucero"
 
@@ -302,12 +305,6 @@ msgstr "Administrador de Cruceros"
 #: model:res.groups,name:cruiseship.cruiseship_group_user
 msgid "Cruiseship User"
 msgstr "Usuario de Cruceros"
-
-#. module: cruiseship
-#: field:departure_cabin.line,partner_id:0
-#: help:departure_cabin.line,partner_id:0 help:departure_cabin.line,user_id:0
-msgid "Customer"
-msgstr "Cliente"
 
 #. module: cruiseship
 #: help:cruise.departure,message_last_post:0
@@ -329,23 +326,15 @@ msgstr "Salida"
 
 #. module: cruiseship
 #: field:cabin.pax.line,ib_airline_id:0
-msgid "Departure Airline Inbound"
-msgstr "Aerolínea de Salida Entrante"
-
-#. module: cruiseship
 #: field:cabin.pax.line,ob_airline_id:0
-msgid "Departure Airline Outbound"
-msgstr "Aerolínea de Salida Saliente"
+msgid "Departure Airline"
+msgstr "Aerolína de Salida"
 
 #. module: cruiseship
 #: field:cabin.pax.line,ib_ap_dep_id:0
-msgid "Departure Airport Inbound"
-msgstr "Aerolínea de Llegada Entrante"
-
-#. module: cruiseship
 #: field:cabin.pax.line,ob_ap_dep_id:0
-msgid "Departure Airport Outbound"
-msgstr "Aerolínea de Salida Saliente"
+msgid "Departure Airport"
+msgstr "Aeropuerto de Salida"
 
 #. module: cruiseship
 #: field:cabin.pax.line,departure_cabin_line_id:0
@@ -355,13 +344,9 @@ msgstr "Línea de Salida Cabina"
 
 #. module: cruiseship
 #: field:cabin.pax.line,ib_time_dep:0
-msgid "Departure Inbound Time"
-msgstr "Hora de Partida Salida"
-
-#. module: cruiseship
 #: field:cabin.pax.line,ob_time_dep:0
-msgid "Departure Outbound Time"
-msgstr "Hora de Partida Llegada"
+msgid "Departure Time"
+msgstr "Hora de Salida"
 
 #. module: cruiseship
 #: view:cruise.departure:cruiseship.cruise_departure_search_form_view
@@ -380,11 +365,6 @@ msgid "Departures"
 msgstr "Salidas"
 
 #. module: cruiseship
-#: model:product.category,name:cruiseship.cruise_ship_ct_1_product_category
-msgid "Double bunk bed"
-msgstr "Litera"
-
-#. module: cruiseship
 #: selection:departure_cabin.line,state:0
 msgid "Draft"
 msgstr "Borrador"
@@ -398,6 +378,13 @@ msgstr "Fecha de Nacimiento"
 #: selection:departure_cabin.line,sharing:0
 msgid "Female sharing"
 msgstr "Comparte femenino"
+
+#. module: cruiseship
+#: field:cabin.pax.line,ib_flight_no:0
+#: help:cabin.pax.line,ib_flight_no:0
+#: field:cabin.pax.line,ob_flight_no:0
+msgid "Flight Number"
+msgstr "Número de Vuelo"
 
 #. module: cruiseship
 #: view:cruise.departure:cruiseship.view_departure_ship_form
@@ -426,7 +413,8 @@ msgid "Group by .."
 msgstr "Agrupado por .."
 
 #. module: cruiseship
-#: help:cruise.departure,message_summary:0 help:cruise.ship,message_summary:0
+#: help:cruise.departure,message_summary:0
+#: help:cruise.ship,message_summary:0
 msgid "Holds the Chatter summary (number of messages, ...). This summary is directly in html format in order to be inserted in kanban views."
 msgstr "Holds the Chatter summary (number of messages, ...). This summary is directly in html format in order to be inserted in kanban views."
 
@@ -436,28 +424,33 @@ msgid "Hotel accomodation in Ecuador"
 msgstr "Alojamiento en Hotel del Ecuador"
 
 #. module: cruiseship
-#: field:cabin.pax.line,id:0 field:cruise.cabin,id:0
-#: field:cruise.cabin.type,id:0 field:cruise.departure,id:0
-#: field:cruise.ship,id:0 field:departure.ship.line,id:0
+#: field:cabin.pax.line,id:0
+#: field:cruise.cabin,id:0
+#: field:cruise.cabin.type,id:0
+#: field:cruise.departure,id:0
+#: field:cruise.ship,id:0
+#: field:departure.ship.line,id:0
 #: field:departure_cabin.line,id:0
 msgid "ID"
 msgstr "ID"
 
 #. module: cruiseship
-#: field:cabin.pax.line,id_no:0 help:cabin.pax.line,id_no:0
+#: field:cabin.pax.line,id_no:0
+#: help:cabin.pax.line,id_no:0
 #: view:cruise.departure:cruiseship.view_departure_ship_form
 msgid "Identification Number"
 msgstr "Número de identificación"
 
 #. module: cruiseship
-#: help:cruise.departure,message_unread:0 help:cruise.ship,message_unread:0
+#: help:cruise.departure,message_unread:0
+#: help:cruise.ship,message_unread:0
 msgid "If checked new messages require your attention."
 msgstr "If checked new messages require your attention."
 
 #. module: cruiseship
-#: field:cabin.pax.line,ib_flight_no:0 help:cabin.pax.line,ib_flight_no:0
-msgid "Inbound Flight Number"
-msgstr "Número de Vuelo Llegada"
+#: view:cruise.departure:cruiseship.view_departure_ship_form
+msgid "Inbound Flight / Vuelo de Retorno"
+msgstr "Vuelo de Retorno"
 
 #. module: cruiseship
 #: field:cruise.cabin,iscabin:0
@@ -489,20 +482,26 @@ msgstr "Itinerario para esta salida"
 #: field:cruise.departure,message_last_post:0
 #: field:cruise.ship,message_last_post:0
 msgid "Last Message Date"
-msgstr "Last Message Date"
+msgstr "Fecha del Último Mensaje"
 
 #. module: cruiseship
-#: field:cabin.pax.line,write_uid:0 field:cruise.cabin,write_uid:0
-#: field:cruise.cabin.type,write_uid:0 field:cruise.departure,write_uid:0
-#: field:cruise.ship,write_uid:0 field:departure.ship.line,write_uid:0
+#: field:cabin.pax.line,write_uid:0
+#: field:cruise.cabin,write_uid:0
+#: field:cruise.cabin.type,write_uid:0
+#: field:cruise.departure,write_uid:0
+#: field:cruise.ship,write_uid:0
+#: field:departure.ship.line,write_uid:0
 #: field:departure_cabin.line,write_uid:0
 msgid "Last Updated by"
 msgstr "Last Updated by"
 
 #. module: cruiseship
-#: field:cabin.pax.line,write_date:0 field:cruise.cabin,write_date:0
-#: field:cruise.cabin.type,write_date:0 field:cruise.departure,write_date:0
-#: field:cruise.ship,write_date:0 field:departure.ship.line,write_date:0
+#: field:cabin.pax.line,write_date:0
+#: field:cruise.cabin,write_date:0
+#: field:cruise.cabin.type,write_date:0
+#: field:cruise.departure,write_date:0
+#: field:cruise.ship,write_date:0
+#: field:departure.ship.line,write_date:0
 #: field:departure_cabin.line,write_date:0
 msgid "Last Updated on"
 msgstr "Last Updated on"
@@ -521,11 +520,6 @@ msgstr "Lista de Pasajeros"
 #: selection:departure_cabin.line,sharing:0
 msgid "Male sharing"
 msgstr "Comparte masculino"
-
-#. module: cruiseship
-#: model:product.category,name:cruiseship.cruise_ship_ct_2_product_category
-msgid "Matrimonial"
-msgstr "Matrimonial"
 
 #. module: cruiseship
 #: field:cruise.cabin,max_adult:0
@@ -558,14 +552,21 @@ msgid "Maximum passenger number allowed in law"
 msgstr "Máximo número de pasajeros permitidos por la ley"
 
 #. module: cruiseship
-#: field:cruise.departure,message_ids:0 field:cruise.ship,message_ids:0
+#: field:cruise.departure,message_ids:0
+#: field:cruise.ship,message_ids:0
 msgid "Messages"
 msgstr "Mensajes"
 
 #. module: cruiseship
-#: help:cruise.departure,message_ids:0 help:cruise.ship,message_ids:0
+#: help:cruise.departure,message_ids:0
+#: help:cruise.ship,message_ids:0
 msgid "Messages and communication history"
 msgstr "Mensajes e historia de comunicaciones"
+
+#. module: cruiseship
+#: view:cruise.departure:cruiseship.cruise_departure_search_form_view
+msgid "Month"
+msgstr "Mes"
 
 #. module: cruiseship
 #: view:website:cruiseship.report_passenger_list
@@ -573,7 +574,8 @@ msgid "Nacionalidad"
 msgstr "Nacionalidad"
 
 #. module: cruiseship
-#: field:cruise.departure,name:0 help:cruise.departure,name:0
+#: field:cruise.departure,name:0
+#: help:cruise.departure,name:0
 msgid "Name"
 msgstr "Nombre"
 
@@ -603,18 +605,20 @@ msgid "Observaciones"
 msgstr "Observaciones"
 
 #. module: cruiseship
-#: field:cabin.pax.line,observations:0 help:cabin.pax.line,observations:0
+#: field:cabin.pax.line,observations:0
+#: help:cabin.pax.line,observations:0
 #: view:cruise.departure:cruiseship.view_departure_ship_form
-#: field:cruise.departure,observations:0 help:cruise.departure,observations:0
+#: field:cruise.departure,observations:0
+#: help:cruise.departure,observations:0
 #: view:cruise.ship:cruiseship.view_cruise_ship_form
 #: field:cruise.ship,observations:0
 msgid "Observations"
 msgstr "Observaciones"
 
 #. module: cruiseship
-#: field:cabin.pax.line,ob_flight_no:0
-msgid "Outbound Flight Number"
-msgstr "Número de Vuelo Salida"
+#: view:cruise.departure:cruiseship.view_departure_ship_form
+msgid "Outbound Flight / Vueldo de Ida"
+msgstr "Vueldo de Ida"
 
 #. module: cruiseship
 #: view:website:cruiseship.report_passenger_list
@@ -690,11 +694,6 @@ msgid "Restricciones de Salud"
 msgstr "Restricciones de Salud"
 
 #. module: cruiseship
-#: field:departure_cabin.line,user_id:0
-msgid "Sales Person"
-msgstr "Vendedor"
-
-#. module: cruiseship
 #: view:website:cruiseship.report_passenger_list
 msgid "Salida:"
 msgstr "Salida:"
@@ -702,32 +701,32 @@ msgstr "Salida:"
 #. module: cruiseship
 #: help:cabin.pax.line,ib_ap_arr_id:0
 msgid "Select arrival airport inbound"
-msgstr "Seleccione aeropuerto de llegada entrante"
+msgstr "Seleccione aeropuerto de llegada"
 
 #. module: cruiseship
 #: help:cabin.pax.line,ob_ap_arr_id:0
 msgid "Select arrival airport outbound"
-msgstr "Seleccione aeropuerto de llegada saliente"
+msgstr "Seleccione aeropuerto de llegada"
+
+#. module: cruiseship
+#: help:cabin.pax.line,ob_airline_id:0
+msgid "Select departure airline"
+msgstr "Select departure airline"
 
 #. module: cruiseship
 #: help:cabin.pax.line,ib_ap_dep_id:0
 msgid "Select departure airport inbound"
-msgstr "Seleccione aeropuerto de salida entrante"
-
-#. module: cruiseship
-#: help:cabin.pax.line,ob_airline_id:0
-msgid "Select departure outbound airline"
-msgstr "Seleccione aerolínea de salida saliente"
+msgstr "Seleccione aeropuerto de salida "
 
 #. module: cruiseship
 #: help:cabin.pax.line,ib_airline_id:0
 msgid "Select inbound departure airline"
-msgstr "Seleccione aerolínea de salida entrante"
+msgstr "Seleccione aerolínea de salida "
 
 #. module: cruiseship
 #: help:cabin.pax.line,ob_ap_dep_id:0
 msgid "Select outbound departure airport"
-msgstr "Seleccione aeropuerto de salida saliente"
+msgstr "Seleccione aeropuerto de salida "
 
 #. module: cruiseship
 #: help:departure_cabin.line,sharing:0
@@ -757,7 +756,8 @@ msgid "Ship"
 msgstr "Navío"
 
 #. module: cruiseship
-#: view:cruise.ship:cruiseship.view_cruise_ship_form field:cruise.ship,name:0
+#: view:cruise.ship:cruiseship.view_cruise_ship_form
+#: field:cruise.ship,name:0
 msgid "Ship Name"
 msgstr "Nombre del navío"
 
@@ -772,7 +772,8 @@ msgid "State"
 msgstr "Estado"
 
 #. module: cruiseship
-#: field:cruise.departure,message_summary:0 field:cruise.ship,message_summary:0
+#: field:cruise.departure,message_summary:0
+#: field:cruise.ship,message_summary:0
 msgid "Summary"
 msgstr "Resúmen"
 
@@ -802,7 +803,8 @@ msgid "Tour folio line added in source folio"
 msgstr "Línea de folio de turismo agregada en el folio orígen"
 
 #. module: cruiseship
-#: field:cruise.departure,message_unread:0 field:cruise.ship,message_unread:0
+#: field:cruise.departure,message_unread:0
+#: field:cruise.ship,message_unread:0
 msgid "Unread Messages"
 msgstr "Mensajes no leídos"
 
@@ -815,6 +817,28 @@ msgstr "Vuelos (Ida/Retorno)"
 #: selection:departure_cabin.line,state:0
 msgid "Waiting list"
 msgstr "Lista de espera"
+
+#. module: cruiseship
+#: field:cruise.departure,website_message_ids:0
+#: field:cruise.ship,website_message_ids:0
+msgid "Website Messages"
+msgstr "Mensajes del Website"
+
+#. module: cruiseship
+#: help:cruise.departure,website_message_ids:0
+#: help:cruise.ship,website_message_ids:0
+msgid "Website communication history"
+msgstr "Historia de comunicacions del Website"
+
+#. module: cruiseship
+#: help:cruise.departure,year_month:0
+msgid "Year and month of departure"
+msgstr "Año y mes de la salida"
+
+#. module: cruiseship
+#: field:cruise.departure,year_month:0
+msgid "Year-Month Departure"
+msgstr "Año-Mes Salida"
 
 #. module: cruiseship
 #: selection:cabin.pax.line,age_ref:0
@@ -845,4 +869,5 @@ msgstr "Campos de ayuda"
 #. module: cruiseship
 #: help:cabin.pax.line,ob_flight_no:0
 msgid "outbound Flight Number"
-msgstr "Número de vuelo saliente"
+msgstr "Número de vuelo "
+
