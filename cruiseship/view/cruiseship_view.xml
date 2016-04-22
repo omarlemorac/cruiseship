@@ -86,6 +86,9 @@
             <field name="model">cruise.departure</field>
             <field name="arch" type="xml">
                 <search string="Departure custom filter">
+                  <field name="name" />
+                  <field name="departure_date" />
+                  <field name="ship_id" />
                     <filter string="Not operated"
                       name="notoperated"
                        domain="[('departure_date','&gt;=',((context_today()).strftime('%%Y-%%m-%%d')))]"
@@ -93,6 +96,7 @@
                     <separator />
                     <group expand="0" string="Group by ..">
                         <filter string="Ship" domain="[]" context="{'group_by':'ship_id'}" />
+                        <filter string="Month" domain="[]" context="{'group_by':'year_month'}" />
                     </group>
                 </search>
             </field>
@@ -113,6 +117,7 @@
                     <field name="confirm"/>
                     <field name="wlist"/>
                     <field name="available"/>
+                    <field name="year_month" invisible="1"/>
                 </tree>
               </field>
             </record>
@@ -253,21 +258,21 @@
                                                   <field name="id_no" />
                                                 </h2>
                                               </div>
-                                              <group>
-                                                <field name="ib_ap_dep_id" />
-                                                <field name="ib_ap_arr_id" />
-                                                <field name="ib_airline_id" />
-                                                <field name="ib_flight_no" />
-                                                <field name="ib_time_dep" />
-                                                <field name="ib_time_arr" />
-                                              </group>
-                                              <group>
+                                              <group string="Outbound Flight / Vueldo de Ida">
                                                 <field name="ob_ap_dep_id" />
                                                 <field name="ob_ap_arr_id" />
                                                 <field name="ob_airline_id" />
                                                 <field name="ob_flight_no" />
                                                 <field name="ob_time_dep"/>
                                                 <field name="ob_time_arr" />
+                                              </group>
+                                              <group string="Inbound Flight / Vuelo de Retorno">
+                                                <field name="ib_ap_dep_id" />
+                                                <field name="ib_ap_arr_id" />
+                                                <field name="ib_airline_id" />
+                                                <field name="ib_flight_no" />
+                                                <field name="ib_time_dep" />
+                                                <field name="ib_time_arr" />
                                               </group>
                                               <label for="arrange_ticket" string="Arrange Ticket" />
                                               <field name="arrange_ticket" />

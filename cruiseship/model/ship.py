@@ -74,30 +74,30 @@ class cabin_pax_line(models.Model):
     arriving_flight = fields.Char('Arriving Flight'
         , help='Please include dates, routing and schedule times (ex: 15MAR MIAUIO 10:15PM)')
     ib_ap_dep_id = fields.Many2one('touroperation.airport'
-        , 'Departure Airport Inbound'
+        , 'Departure Airport'
         , help='Select departure airport inbound')
     ib_ap_arr_id = fields.Many2one('touroperation.airport'
-        , 'Arrival Airport Inbound'
+        , 'Arrival Airport'
         , help='Select arrival airport inbound')
-    ib_time_dep = fields.Datetime('Departure Inbound Time')
-    ib_time_arr = fields.Datetime('Arrival Inbound Time')
+    ib_time_dep = fields.Datetime('Departure Time')
+    ib_time_arr = fields.Datetime('Arrival Time')
     ib_airline_id = fields.Many2one('touroperation.airline'
-        , 'Departure Airline Inbound'
+        , 'Departure Airline'
         , help='Select inbound departure airline')
-    ib_flight_no = fields.Char('Inbound Flight Number'
-        , help='Inbound Flight Number')
+    ib_flight_no = fields.Char('Flight Number'
+        , help='Flight Number')
     ob_ap_dep_id = fields.Many2one('touroperation.airport'
-        , 'Departure Airport Outbound'
+        , 'Departure Airport'
         , help='Select outbound departure airport')
     ob_ap_arr_id = fields.Many2one('touroperation.airport'
-        , 'Arrival Airport Outbound'
+        , 'Arrival Airport'
         , help='Select arrival airport outbound')
-    ob_time_dep = fields.Datetime('Departure Outbound Time')
-    ob_time_arr = fields.Datetime('Arrival Outbound Time')
+    ob_time_dep = fields.Datetime('Departure Time')
+    ob_time_arr = fields.Datetime('Arrival Time')
     ob_airline_id = fields.Many2one('touroperation.airline'
-        , 'Departure Airline Outbound'
-        , help='Select departure outbound airline')
-    ob_flight_no = fields.Char('Outbound Flight Number'
+        , 'Departure Airline'
+        , help='Select departure airline')
+    ob_flight_no = fields.Char('Flight Number'
         , help='outbound Flight Number')
     arrange_ticket = fields.Boolean('Arrange Ticket?', help='Arrange passenger ticket?')
     arrange_migration_card = fields.Boolean('Arrange Migration Card?',
@@ -113,15 +113,17 @@ class cabin_pax_line(models.Model):
 
     @api.onchange('ib_time_dep')
     def onchange_ib_time_dep(self):
-        res = {}
-        res['value'] = {'ib_time_arr' : self.ib_time_dep}
-        return res
+        self.ib_time_arr = self.ib_time_dep
+#        res = {}
+#        res['value'] = {'ib_time_arr' : self.ib_time_dep}
+#        return res
 
     @api.onchange('ob_time_dep')
     def onchange_ob_time_dep(self):
-        res = {}
-        res['value'] = {'ob_time_arr' : self.ob_time_dep}
-        return res
+        self.ob_time_arr = self.ob_time_dep
+#        res = {}
+#        res['value'] = {'ob_time_arr' : self.ob_time_dep}
+#        return res
 
 class departure_cabin_line(models.Model):
     _name = 'departure_cabin.line'
@@ -317,6 +319,12 @@ class departure(models.Model):
     _order='departure_date'
 
     @api.one
+    @api.depends('departure_date')
+    def _departure_yearmonth(self):
+        print "{}/{}".format(self.departure_date, self.departure_date[:7])
+        self.year_month = self.departure_date[:7]
+
+    @api.one
     @api.depends('cabin_ids', 'departure_cabin_line_ids')
     def _availability(self):
         self.availability = av_tot = sum([c.max_adult for c in self.cabin_ids])
@@ -357,9 +365,8 @@ class departure(models.Model):
                 self.total_children += cline.children
                 self.total_young += cline.young
 
-        self.total_spaces_taken = self.total_adults +\
-            self.total_children +\
-            self.total_young
+        self.total_spaces_taken = self.request +\
+            self.confirm
 
     name = fields.Char('Name', help='Name', required=True)
     departure_date = fields.Date('Departure date', help='Departure date',
@@ -395,7 +402,7 @@ class departure(models.Model):
         , 'Cabins reserved'
         , help='Add cabins reserved')
     availability = fields.Integer(compute="_availability"
-        , method=True, store=False, fnct_search=None
+        , method=True, store=True, fnct_search=None
         , multi=True, string='Availability', help='Cabin Availability')
     request = fields.Integer(compute = "_availability"
         , method=True, store=False, fnct_search=None
@@ -422,6 +429,9 @@ class departure(models.Model):
     total_spaces_taken = fields.Integer(compute="_total_spaces"
         , method=True, store=False, fnct_search=None
         , string='Total Spaces Taken', help='Total spaces taken')
+    year_month = fields.Char(compute="_departure_yearmonth"
+        , method=True, store=True, fnct_search=None
+        , string='Year-Month Departure', help='Year and month of departure')
 
 
     def create(self, cr, uid, values, context=None):
