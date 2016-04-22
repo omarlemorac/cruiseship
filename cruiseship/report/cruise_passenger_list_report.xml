@@ -70,16 +70,16 @@
                       <td><span t-field="pax_line.pax_id.date_of_birth" /></td>
                       <td><span t-field="cabin_line.cabin_id.name" /></td>
                       <td style="font-size:11px;">
-                        <span t-field="pax_line.ib_ap_dep_id.name" />
-                        <span t-field="pax_line.ib_flight_no" />
-                        <span t-field="pax_line.ib_time_dep" widget="datetime" /><br />
-                        <span t-field="pax_line.ib_ap_arr_id.name" />
-                        <span t-field="pax_line.ib_time_arr" widget="datetime" /><br />
                         <span t-field="pax_line.ob_ap_dep_id.name" />
                         <span t-field="pax_line.ob_flight_no" />
                         <span t-field="pax_line.ob_time_dep" widget="datetime" /><br />
                         <span t-field="pax_line.ob_ap_arr_id.name" />
                         <span t-field="pax_line.ob_time_arr" widget="datetime" /><br />
+                        <span t-field="pax_line.ib_ap_dep_id.name" />
+                        <span t-field="pax_line.ib_flight_no" />
+                        <span t-field="pax_line.ib_time_dep" widget="datetime" /><br />
+                        <span t-field="pax_line.ib_ap_arr_id.name" />
+                        <span t-field="pax_line.ib_time_arr" widget="datetime" /><br />
                       </td>
                     </tr>
                     <t t-if="pax_line.pax_id.dietary_requirements" >
