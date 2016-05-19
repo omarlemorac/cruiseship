@@ -111,19 +111,18 @@ class cabin_pax_line(models.Model):
                                help='Passenger Allergies - Medical conditions')
 
 
+
+    @api.onchange('pax_id')
+    def onchange_pax_id(self):
+        self.id_no = self.pax_id.ced_ruc
+
     @api.onchange('ib_time_dep')
     def onchange_ib_time_dep(self):
         self.ib_time_arr = self.ib_time_dep
-#        res = {}
-#        res['value'] = {'ib_time_arr' : self.ib_time_dep}
-#        return res
 
     @api.onchange('ob_time_dep')
     def onchange_ob_time_dep(self):
         self.ob_time_arr = self.ob_time_dep
-#        res = {}
-#        res['value'] = {'ob_time_arr' : self.ob_time_dep}
-#        return res
 
 class departure_cabin_line(models.Model):
     _name = 'departure_cabin.line'

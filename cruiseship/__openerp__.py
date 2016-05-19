@@ -37,6 +37,7 @@ ship cruises
     'images' : [],
     'depends' : [
         "base", "sale","tour_operation","report_webkit",
+        "l10n_ec_partner",
     ],
     'data': [
         'view/cruiseship_view.xml',
