@@ -187,7 +187,7 @@
                               <field name="departure_cabin_line_ids" nolabel="1">
                                 <tree>
                                   <field name="cabin_id" />
-                                  <field name="folio_id" string="Folio"/>
+                                  <field name="folio_id" string="Folio" />
                                   <field name="partner_id" />
                                   <field name="user_id" />
                                   <field name="confirm_date" />
@@ -210,16 +210,16 @@
                                           <label for="folio_id" string="Folio"/>
                                       </div>
                                       <h1>
-                                          <field name="folio_id"/>
+                                          <field name="folio_id" required="1"/>
                                       </h1>
                                       <field name="cabin_id" />
                                     </div>
-                                    <group>
+                                    <group col="2">
                                       <field name="adult" />
                                       <field name="children" />
                                       <field name="young" />
                                     </group>
-                                    <group>
+                                    <group col="2">
                                       <field name="adult_price_unit" />
                                       <field name="child_price_unit" />
                                       <field name="young_price_unit" />
@@ -228,9 +228,9 @@
                                       <field name="sharing" />
                                     </group>
                                     <group>
-                                      <field name='option_date' />
-                                      <field name="deposit_date" />
-                                      <field name='balance_date' />
+                                      <field name='option_date' invisible="1" />
+                                      <field name="deposit_date" invisible="1" />
+                                      <field name='balance_date' invisible="1" />
                                     </group>
                                     <notebook>
                                       <page string="Passenger List">
